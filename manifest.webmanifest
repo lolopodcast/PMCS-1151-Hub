@@ -1,0 +1,20 @@
+{
+  "name": "PMCS · Course Hub",
+  "short_name": "PMCS",
+  "description": "Course hub for PMCS (EMI), semester 1151 — Prof. Shihmin Lo, NCNU IBS.",
+  "id": "/PMCS-1151-Hub/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121212",
+  "theme_color": "#004030",
+  "lang": "zh-TW",
+  "dir": "ltr",
+  "categories": ["education"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -7,6 +7,15 @@
 <meta name="description" content="PMCS (EMI) Course Hub — Introduction to Project Management and Career Strategy as a Product Manager in the AI Era. Semester 1151, Prof. Shihmin Lo, NCNU IBS.">
 <title>PMCS · Course Hub — PM Career Strategy & Project Management in the AI Era</title>
 
+<!-- PWA：可加到手機主畫面、可離線開啟 -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#004030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PMCS">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +37,8 @@ tailwind.config = {
   body { font-family: 'Inter', sans-serif; }
   @keyframes fadeInUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
   .animate-fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+  summary::-webkit-details-marker { display: none; }
+  summary::marker { content: ''; }
   .no-sb { scrollbar-width: none; -ms-overflow-style: none; }
   .no-sb::-webkit-scrollbar { display: none; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -114,6 +125,30 @@ document.addEventListener('dragstart', function (e) {
   if (tag === 'IMG' || (e.target.closest && e.target.closest('svg'))) e.preventDefault();
 });
 
+/* ============ Service Worker 註冊（PWA） ============ */
+/* 只在真正的部署網域註冊；本機 127.0.0.1／localhost 也算安全來源，方便測試。 */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    var host = location.hostname;
+    var okHost = (host === 'lolopodcast.github.io' || host === 'localhost' || host === '127.0.0.1');
+    if (!okHost) return;
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      /* 有新版時立刻換掉，不讓學生停在舊快取 */
+      reg.addEventListener('updatefound', function () {
+        var nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', function () {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) nw.postMessage('skipWaiting');
+        });
+      });
+    }).catch(function () { /* 註冊失敗不影響網頁本身 */ });
+  });
+  var _reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (_reloaded) return; _reloaded = true; location.reload();
+  });
+}
+
 /* ============ DOMPurify 安全包裝（動態 HTML 插入用） ============ */
 window.safeHTML = function (raw) {
   try { return DOMPurify.sanitize(String(raw)); }
@@ -140,10 +175,15 @@ const IconScale = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 2
 const IconShield = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>);
 const IconLayers = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>);
 const IconExternal = ({size=14}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>);
+const IconChevronLeft = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>);
+const IconChevronRight = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>);
 const IconChevronDown = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>);
 const IconEye = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>);
 const IconEyeOff = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M6.61 6.61A18.4 18.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>);
 const IconLock = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>);
+const IconTool = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>);
+const IconAlert = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>);
+const IconUpload = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>);
 const IconFile = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>);
 const IconVideo = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>);
 const IconBook = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>);
@@ -166,13 +206,13 @@ const daysBetween = (a, b) => Math.round((b - a) / 86400000);
 
 /* ==================== 四個區塊 ==================== */
 const BLOCKS = {
-  intro: { zh: '導論', en: 'Introduction', color: 'slate' },
-  arch:  { zh: '概念層 · AI 世代的工作架構', en: 'Concept · The Architecture of Working with AI', color: 'emerald' },
-  role:  { zh: '角色層 · PM 的角色、職能與職涯', en: 'Role · PM Role, Competency and Career', color: 'sky' },
-  build: { zh: '實作層 · 建置你的晨報 Agent', en: 'Build · Building Your Morning-Brief Agent', color: 'amber' },
-  pjm:   { zh: '落實層 · 專案管理：規劃→控制→交付', en: 'Deliver · Project Management: Plan → Control → Deliver', color: 'rose' },
-  tp:    { zh: '期末專案節點 · 提案與驗收', en: 'Term Project · Proposal and Acceptance', color: 'indigo' },
-  flex:  { zh: '彈性教學 · 自主學習', en: 'Flexible · Self-Directed Learning', color: 'violet' }
+  intro: { zh: '導論', en: 'Introduction', s_zh: '導論', s_en: 'Introduction', color: 'slate' },
+  arch:  { zh: '概念層 · AI 世代的工作架構', en: 'Concept · The Architecture of Working with AI', s_zh: '概念層', s_en: 'Concept', color: 'emerald' },
+  role:  { zh: '角色層 · PM 的角色、職能與職涯', en: 'Role · PM Role, Competency and Career', s_zh: '角色層', s_en: 'Role', color: 'sky' },
+  build: { zh: '實作層 · 建置你的晨報 Agent', en: 'Build · Building Your Morning-Brief Agent', s_zh: '實作層', s_en: 'Build', color: 'amber' },
+  pjm:   { zh: '落實層 · 專案管理：規劃→控制→交付', en: 'Deliver · Project Management: Plan → Control → Deliver', s_zh: '落實層', s_en: 'Deliver', color: 'rose' },
+  tp:    { zh: '期末專案節點 · 提案與驗收', en: 'Term Project · Proposal and Acceptance', s_zh: '期末專案', s_en: 'Term Project', color: 'indigo' },
+  flex:  { zh: '彈性教學 · 自主學習', en: 'Flexible · Self-Directed Learning', s_zh: '彈性教學', s_en: 'Flexible', color: 'violet' }
 };
 
 /* k: main=主教材必讀第一項 / read=必讀 / opt=選讀 / yt=影音 / pdf=講義 */
@@ -401,6 +441,38 @@ const WEEKS = [
   ], ws:null }
 ];
 
+/* ==================== SDL 學習夥伴：安裝四步 ==================== */
+const SDL_FILE = 'sdl-review';          /* 教師發給學生的 skill 資料夾／壓縮檔名稱 */
+const SDL_STEPS = [
+  { zh:'先跟教師拿檔案', en:'Get the file from your instructor',
+    d_zh:'教師會發一個 sdl-review 的 skill 檔（zip）。這是課程專用的，不要自己去外面找同名的東西。',
+    d_en:'Your instructor hands out a sdl-review skill file (a zip). It is written for this course — do not substitute something you found elsewhere.' },
+  { zh:'裝進你的 AI 平台', en:'Install it in your AI platform',
+    d_zh:'三個平台的做法不同，見下方對照。裝一次就好，之後每一週都用同一個。',
+    d_en:'The three platforms differ — see the table below. You install it once and use it every week.' },
+  { zh:'填好最上面那一段個人設定', en:'Fill in the personalisation block at the top',
+    d_zh:'檔案開頭有一段空白待填：課程代碼＝PMCS、課程全名、學期＝1151、組別、姓名、學號、平台、方案。填一次，之後每次對話它就知道你是誰，不必重講。方案照實填，不影響評分。',
+    d_en:'The file opens with blanks: course code PMCS, full course title, semester 1151, team, name, student ID, platform and plan. Fill them once and it knows who you are in every later conversation. Answer the plan question honestly — it does not affect your grade.' },
+  { zh:'開一個新對話測試', en:'Open a new conversation and test it',
+    d_zh:'輸入「個人閱讀 SDL」四個字。它應該回你一段開場登記，問你這次是第幾週、什麼主題。沒有反應就是沒裝成功，回頭檢查第 2 步。',
+    d_en:'Type “personal SDL”. It should answer with an opening check-in asking which week and which topic. No reaction means it is not installed — go back to step 2.' }
+];
+
+const SDL_PLAT = [
+  { name:'Claude', key:'claude',
+    d_zh:'Customize → Skills → Add，上傳整包 zip，然後把它打開。若 Add 是灰的，先到 Settings → Capabilities 把程式碼執行（code execution）打開。免費方案也可以用。',
+    d_en:'Customize → Skills → Add, upload the zip, then switch it on. If Add is greyed out, first enable code execution in Settings → Capabilities. Available on the free plan.',
+    url:'https://support.claude.com/en/articles/12512198-how-to-create-custom-skills' },
+  { name:'ChatGPT', key:'chatgpt',
+    d_zh:'ChatGPT 沒有 skill 這個東西，改用專案：新增一個名為 PMCS SDL 的 Project，點右上角三個點 → Project settings，把 SKILL.md 的內容整段貼進 instructions。之後在這個專案裡開對話。免費方案也能建專案。',
+    d_en:'ChatGPT has no “skills”. Use a project instead: create one called PMCS SDL, open the three-dot menu → Project settings, and paste the whole SKILL.md text into the instructions. Start your conversations inside that project. Free accounts can create projects.',
+    url:'https://help.openai.com/en/articles/10169521-using-projects-in-chatgpt' },
+  { name:'Gemini', key:'gemini',
+    d_zh:'用 Gem：側邊欄 → Gems → New Gem，名稱取 PMCS SDL，把 SKILL.md 的內容整段貼進指示欄，存檔。之後每次從這個 Gem 開始對話。',
+    d_en:'Use a Gem: sidebar → Gems → New Gem, name it PMCS SDL, paste the whole SKILL.md text into the instructions, and save. Start each conversation from that Gem.',
+    url:'https://support.google.com/gemini/answer/15146780' }
+];
+
 /* ==================== 課堂上說的「三張圖」 ==================== */
 const MAPS = [
   { no_zh:'圖一', no_en:'Map 1', code:'T1 · AIWE', wk:'W3 · W10',
@@ -527,6 +599,25 @@ en: {
 
   /* Sections */
   s0: 'Overview', s1: 'Weekly Materials', s2: 'Term Project', s3: 'Assessment', s4: 'Ethics', s5: 'All Resources',
+  s6: 'SDL Partner',
+
+  /* SDL */
+  sd_title: 'Installing the SDL learning partner',
+  sd_intro: 'Every worksheet from W3 onwards expects you to work through it with the SDL learning partner — a course-specific instruction set that turns your AI into a Socratic study partner and produces the KB snapshot you hand in. You install it once, at the start of term, and use the same one every week.',
+  sd_what: 'What it actually is',
+  sd_what_p: 'A text file of instructions, not an app. Claude calls this kind of thing a skill; ChatGPT and Gemini have no equivalent, so there you paste the same text into a project or a Gem. The behaviour is the same either way: it registers who you are, asks you questions instead of handing you answers, and at the end writes a KB.md you can submit.',
+  sd_steps: 'Four steps',
+  sd_plat: 'Where it goes, per platform',
+  sd_plat_c1: 'Platform', sd_plat_c2: 'How to install it', sd_plat_c3: 'Official guide',
+  sd_trouble: 'If it does not respond',
+  sd_t1: 'On Claude: check that the skill is switched on in Customize → Skills, and that code execution is enabled in Settings → Capabilities.',
+  sd_t2: 'On ChatGPT: make sure you opened the conversation inside the project, not in a plain chat.',
+  sd_t3: 'On Gemini: start the conversation from the Gem itself, not from the main Gemini page.',
+  sd_t4: 'On any platform: start a fresh conversation. One learning activity is one conversation — that is also what makes your transcript usable as evidence.',
+  sd_rule: 'One activity, one conversation',
+  sd_rule_p: 'The transcript is part of what you hand in, so it has to be clean. Do not run a worksheet inside a conversation already full of unrelated chat — open a new one. What you submit must be the exported transcript in full, never a summary of it.',
+  sd_ask: 'Ask your instructor for the file',
+
 
   /* Overview */
   ov_title: 'Where the course stands today',
@@ -557,6 +648,8 @@ en: {
   wk_maps_note: 'Weeks 3 to 5 introduce them; weeks 10 to 12 come back to the same three while you build. Wherever a week says “Map 1”, “Map 2” or “Map 3”, this is what it means.',
   wk_maps_wk: 'Used in',
   wk_maps_open: 'Open the teaching unit',
+  wk_maps_peek: 'Map 1 AIWE · Map 2 AGEN · Map 3 IPOB — tap to expand',
+  wk_scroll_l: 'Scroll the blocks left', wk_scroll_r: 'Scroll the blocks right',
 
   /* TP */
   tp_title: 'The morning-brief agent',
@@ -583,11 +676,13 @@ en: {
   /* Assessment */
   as_title: 'Assessment and submission',
   as_weights: 'Grade weights',
-  as_ws: 'How worksheets are submitted',
-  as_ws_p: 'Every worksheet keeps your answers in your own browser and never sends them anywhere. You submit by exporting Markdown or CSV from the worksheet and uploading it to Moodle. Filenames must be ASCII — Chinese filenames are lost by Chromium on download and cause trouble on upload.',
-  as_ws_1: 'Personal sections export as Markdown',
-  as_ws_2: 'Group sections export as CSV, one file per team',
-  as_ws_3: 'Answers live in localStorage — a cleared cache or a different computer starts blank',
+  as_ws: 'How worksheets are submitted — read this once',
+  as_ws_p1: 'Nothing you type into a worksheet is ever sent anywhere. It stays in your own browser, which means the worksheet cannot hand anything in for you. You do that yourself, in three steps.',
+  as_ws_1: 'Fill the worksheet in. Personal sections export as Markdown; group sections export as CSV, one file per team.',
+  as_ws_2: 'Export the file from the worksheet, then export the full transcript of your SDL conversation as well.',
+  as_ws_3: 'Upload both to Moodle. Submitting freezes them — you cannot revise afterwards.',
+  as_ws_warn: 'Name every file in ASCII. Chinese filenames are lost by Chromium on download and cause trouble on upload.',
+  as_ws_note: 'Answers live in your browser\'s localStorage: clearing the cache, using a private window or moving to another computer starts you from blank. Export as you go rather than the night before.',
   as_w16: 'The five acceptance items at W16',
   as_w16_c1: 'Item', as_w16_c2: 'Evidence required',
   as_note: 'Bonus credit',
@@ -632,6 +727,24 @@ zh: {
   gate_show: '顯示通行碼', gate_hide: '隱藏通行碼',
 
   s0: '總覽', s1: '每週教材', s2: '期末專案', s3: '評量與繳交', s4: '倫理聲明', s5: '資源總表',
+  s6: 'SDL 學習夥伴',
+
+  sd_title: '安裝「SDL 學習夥伴」',
+  sd_intro: 'W3 以後每一份學習單，都預設你會搭配「SDL 學習夥伴」一起做——那是一份課程專用的指示檔，把你的 AI 變成會反問你的學習夥伴，並在結束時產出你要繳交的 KB 快照。開學裝一次，之後每一週都用同一個。',
+  sd_what: '它到底是什麼',
+  sd_what_p: '它是一份文字指示檔，不是一個 app。Claude 把這種東西叫做 skill；ChatGPT 與 Gemini 沒有對應的東西，所以改把同一份文字貼進專案或 Gem。三個平台的行為一樣：先登記你是誰，接著用反問引導你自己想，最後幫你寫出一份可以繳交的 KB.md。',
+  sd_steps: '四個步驟',
+  sd_plat: '三個平台各自怎麼裝',
+  sd_plat_c1: '平台', sd_plat_c2: '安裝方式', sd_plat_c3: '官方說明',
+  sd_trouble: '如果它沒反應',
+  sd_t1: 'Claude：確認 Customize → Skills 裡這個 skill 是開啟的，而且 Settings → Capabilities 的程式碼執行已經打開。',
+  sd_t2: 'ChatGPT：確認你是在那個專案裡面開對話，不是在一般聊天視窗。',
+  sd_t3: 'Gemini：要從那個 Gem 進去開對話，不是從 Gemini 首頁。',
+  sd_t4: '三個平台通用：開一個全新的對話。一次學習活動就是一個對話——這也是逐字稿能當學習證據的前提。',
+  sd_rule: '一次活動，一個對話',
+  sd_rule_p: '逐字稿是繳交項目之一，所以必須乾淨。不要在一個已經聊了一堆別的事情的對話裡做學習單，開一個新的。繳交的逐字稿必須是匯出的原始全文，不能用摘要或改寫版充當。',
+  sd_ask: '檔案請向教師索取',
+
 
   ov_title: '這門課現在走到哪裡',
   ov_now: '本週', ov_next: '下次上課', ov_before: '距離開學', ov_after: '課程已結束',
@@ -660,6 +773,8 @@ zh: {
   wk_maps_note: 'W3-W5 第一輪把三張圖講一遍，W10-W12 第二輪在你自己動手建置時再走一次。後面每一週寫到「圖一」「圖二」「圖三」，指的就是這三張。',
   wk_maps_wk: '出現在',
   wk_maps_open: '開啟教材',
+  wk_maps_peek: '圖一 AIWE · 圖二 AGEN · 圖三 IPOB —— 點開看說明',
+  wk_scroll_l: '主題列向左捲動', wk_scroll_r: '主題列向右捲動',
 
   tp_title: '晨報 Agent',
   tp_intro: '期末專案不是一份提案文件，而是一個會自己運作的系統：每天早上自己更新、任何人打得開、改一個文字檔就能換一個產業。',
@@ -684,11 +799,13 @@ zh: {
 
   as_title: '評量與繳交',
   as_weights: '成績配分',
-  as_ws: '學習單怎麼交',
-  as_ws_p: '每一份學習單的作答都存在你自己的瀏覽器，不會送到任何地方。繳交方式是從學習單匯出 Markdown 或 CSV，再上傳到 Moodle。檔名一律用 ASCII —— 中文檔名在 Chromium 下載時會遺失，上傳也容易出問題。',
-  as_ws_1: '個人段落匯出 Markdown',
-  as_ws_2: '小組段落匯出 CSV，每組一份',
-  as_ws_3: '作答存在 localStorage —— 清快取或換一台電腦就是空白的',
+  as_ws: '學習單怎麼交 —— 這段請先看過一次',
+  as_ws_p1: '你在學習單裡打的任何東西都不會送到任何地方，它只存在你自己的瀏覽器裡。也就是說，學習單本身沒辦法替你交作業，要你自己交，三個步驟。',
+  as_ws_1: '把學習單填完。個人段落匯出 Markdown；小組段落匯出 CSV，每組一份。',
+  as_ws_2: '從學習單匯出檔案，並且把 SDL 對話的逐字稿也整份匯出。',
+  as_ws_3: '兩份都上傳到 Moodle。繳交即凍結，之後不能再改。',
+  as_ws_warn: '所有檔名一律用 ASCII。中文檔名在 Chromium 下載時會遺失，上傳也容易出問題。',
+  as_ws_note: '作答存在瀏覽器的 localStorage：清快取、用無痕視窗、換一台電腦，都會是空白的。邊做邊匯出，不要留到繳交前一晚。',
   as_w16: 'W16 的五項驗收',
   as_w16_c1: '驗收項目', as_w16_c2: '需要的證據',
   as_note: '加分',
@@ -832,12 +949,16 @@ function App() {
   });
   const [lang, setLang] = useState('en');
   const [isDark, setIsDark] = useState(true);
-  const [section, setSection] = useState(0);
+  const [section, setSection] = useState('ov');
   const [menuOpen, setMenuOpen] = useState(false);
   const [ttsState, setTtsState] = useState('idle');
   const [ttsWeek, setTtsWeek] = useState(null);   /* 語音正在唸的週次 */
   const [openWeek, setOpenWeek] = useState(null);
   const [blockFilter, setBlockFilter] = useState('all');
+  const [mapsOpen, setMapsOpen] = useState(() => {
+    try { return localStorage.getItem('pmcs_hub_maps') === '1'; } catch (e) { return false; }
+  });
+  const toggleMaps = (v) => { setMapsOpen(v); try { localStorage.setItem('pmcs_hub_maps', v ? '1' : '0'); } catch (e) {} };
   const ttsRun = useRef(0);
   const menuRef = useRef(null);
   const ttsUtter = useRef(null);      /* 保留參照，避免 utterance 被 GC 後 onend 永遠不觸發 */
@@ -873,15 +994,55 @@ function App() {
 
   useEffect(() => { ttsRun.current += 1; ttsHardReset(); setTtsState('idle'); setTtsWeek(null); }, [section, lang]);
 
-  /* ===== 朗讀中的區塊：主題列自動捲到水平置中 ===== */
+  /* ===== 主題列：兩端箭頭、滾輪橫捲、朗讀時自動置中 ===== */
   const chipBoxRef = useRef(null);
   const chipRefs = useRef({});
   const weekRefs = useRef({});
+  const [chipEdge, setChipEdge] = useState({ l: false, r: false });
+
+  /* 左右還有沒有東西沒露出來 —— 決定兩端箭頭要不要出現 */
+  const syncChipEdge = () => {
+    const box = chipBoxRef.current;
+    if (!box) return;
+    const max = box.scrollWidth - box.clientWidth;
+    const l = box.scrollLeft > 2, r = max > 2 && box.scrollLeft < max - 2;
+    setChipEdge(prev => (prev.l === l && prev.r === r) ? prev : { l, r });
+  };
+  const nudgeChips = (dir) => {
+    const box = chipBoxRef.current;
+    if (!box) return;
+    box.scrollTo({ left: box.scrollLeft + dir * Math.max(160, box.clientWidth * 0.8), behavior: 'smooth' });
+  };
+  useEffect(() => {
+    if (section !== 'wk') return;
+    syncChipEdge();
+    const box = chipBoxRef.current;
+    const onResize = () => syncChipEdge();
+    /* 桌機沒有橫向捲動手勢，把垂直滾輪轉成橫捲；到底了就把捲動交還給頁面。
+       必須用原生非被動監聽 —— React 的 onWheel 在根節點是 passive，preventDefault 無效。 */
+    const onWheel = (e) => {
+      if (!box) return;
+      const max = box.scrollWidth - box.clientWidth;
+      if (max <= 2) return;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      const d = e.deltaY;
+      if ((d < 0 && box.scrollLeft <= 0) || (d > 0 && box.scrollLeft >= max - 1)) return;
+      e.preventDefault();
+      box.scrollLeft += d;
+    };
+    if (box) box.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('resize', onResize);
+    return () => {
+      if (box) box.removeEventListener('wheel', onWheel);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [section, lang, blockFilter]);
   const ttsBlock = ttsWeek ? ((WEEKS.find(w => w.n === ttsWeek) || {}).block || null) : null;
   useEffect(() => {
-    if (section !== 1 || !ttsBlock) return;
+    if (section !== 'wk' || !ttsBlock) return;
     const box = chipBoxRef.current, el = chipRefs.current[ttsBlock];
     if (!box || !el) return;
+    if (box.scrollWidth <= box.clientWidth + 2) return;   /* 全部看得到就不必捲 */
     const br = box.getBoundingClientRect(), er = el.getBoundingClientRect();
     const delta = (er.left + er.width / 2) - (br.left + br.width / 2);
     if (Math.abs(delta) > 2) box.scrollTo({ left: box.scrollLeft + delta, behavior: 'smooth' });
@@ -889,7 +1050,7 @@ function App() {
 
   /* ===== 正在唸的那一週：垂直捲到頁首與主題列下方 ===== */
   useEffect(() => {
-    if (section !== 1 || !ttsWeek) return;
+    if (section !== 'wk' || !ttsWeek) return;
     const card = weekRefs.current[ttsWeek];
     const box = chipBoxRef.current;
     if (!card) return;
@@ -931,12 +1092,13 @@ function App() {
   const goSection = (id) => { setSection(id); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   const SECTIONS = [
-    { id: 0, label: t.s0, Icon: IconHome },
-    { id: 1, label: t.s1, Icon: IconCalendar },
-    { id: 2, label: t.s2, Icon: IconTarget },
-    { id: 3, label: t.s3, Icon: IconScale },
-    { id: 4, label: t.s4, Icon: IconShield },
-    { id: 5, label: t.s5, Icon: IconLayers }
+    { id: 'ov',  label: t.s0, Icon: IconHome },
+    { id: 'wk',  label: t.s1, Icon: IconCalendar },
+    { id: 'sdl', label: t.s6, Icon: IconTool },
+    { id: 'tp',  label: t.s2, Icon: IconTarget },
+    { id: 'as',  label: t.s3, Icon: IconScale },
+    { id: 'et',  label: t.s4, Icon: IconShield },
+    { id: 'rs',  label: t.s5, Icon: IconLayers }
   ];
 
   /* ===== TTS ===== */
@@ -960,34 +1122,42 @@ function App() {
       /* items：每一段文字可帶一個 wk 標記，讓畫面知道正在唸哪一週 */
       let items = [];
       const put = (str, wk) => { if (str) items.push({ s: String(str), wk: wk == null ? null : wk }); };
-      if (section === 0) {
+      if (section === 'ov') {
         [t.course, t.ov_title, t.ov_what, t.ov_what_p].forEach(x => put(x));
-      } else if (section === 1) {
+      } else if (section === 'wk') {
         /* 未篩選才唸整節抬頭；篩選了就從那個區塊本身開始唸 */
         if (blockFilter === 'all') {
           put(t.wk_title); put(t.wk_sub);
-          put(t.wk_maps);
-          MAPS.forEach(m => put(`${lang === 'zh' ? m.no_zh : m.no_en}. ${m[lang]}. ${lang === 'zh' ? m.d_zh : m.d_en}`));
+          /* 說明卡收起來時就不唸，唸的和看的才會一致 */
+          if (mapsOpen) {
+            put(t.wk_maps);
+            MAPS.forEach(m => put(`${lang === 'zh' ? m.no_zh : m.no_en}. ${m[lang]}. ${lang === 'zh' ? m.d_zh : m.d_en}`));
+          }
         }
         else if (BLOCKS[blockFilter]) { put(BLOCKS[blockFilter][lang]); }
         (blockFilter === 'all' ? WEEKS : WEEKS.filter(w => w.block === blockFilter))
           .forEach(w => put(`W${w.n}. ${w[lang].t}. ${w[lang].s}`, w.n));
-      } else if (section === 2) {
+      } else if (section === 'tp') {
         [t.tp_title, t.tp_intro, t.tp_spec].forEach(x => put(x));
         TP_SPEC.forEach((x, i) => put(`${i + 1}. ${x[lang]}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
         put(t.tp_ladder); put(t.tp_ladder_note);
         LADDER.forEach(l => put(`Level ${l.lv}. ${l[lang]}. ${lang === 'zh' ? l.zh_d : l.en_d}`));
         put(t.tp_dday); put(t.tp_dday_note);
-      } else if (section === 3) {
+      } else if (section === 'as') {
         put(t.as_title); put(t.as_weights);
         GRADE.forEach(g => put(`${g[lang]} ${g.pct}%`));
-        put(t.as_ws); put(t.as_ws_p); put(t.as_w16);
+        put(t.as_ws); put(t.as_ws_p1); put(t.as_ws_1); put(t.as_ws_2); put(t.as_ws_3); put(t.as_ws_warn); put(t.as_w16);
         W16_CHECK.forEach(c => put(`${c[lang]}. ${lang === 'zh' ? c.e_zh : c.e_en}`));
-      } else if (section === 4) {
+      } else if (section === 'et') {
         put(t.et_title); put(t.et_intro);
         ETHICS.forEach((e, i) => put(`${i + 1}. ${e[lang]}`));
         put(t.et_gate);
         [[t.et_g1, t.et_g1d], [t.et_g2, t.et_g2d], [t.et_g3, t.et_g3d], [t.et_g4, t.et_g4d]].forEach(([a, b2]) => put(`${a}. ${b2}`));
+      } else if (section === 'sdl') {
+        put(t.sd_title); put(t.sd_intro);
+        SDL_STEPS.forEach((x, i) => put(`${i + 1}. ${x[lang]}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
+        put(t.sd_plat);
+        SDL_PLAT.forEach(x => put(`${x.name}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
       } else {
         put(t.rs_title); put(t.rs_teach);
         TEACH.forEach(x => put(`${x.code}. ${x[lang]}`));
@@ -1183,7 +1353,7 @@ function App() {
                 ? `W${nums[0]}${nums.length > 1 ? `–W${nums[nums.length - 1]}` : ''}`
                 : nums.map(v => `W${v}`).join(' · ');
               return (
-                <button key={bk} onClick={() => { setBlockFilter(bk); goSection(1); }}
+                <button key={bk} onClick={() => { setBlockFilter(bk); goSection('wk'); }}
                   className="w-full text-left flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
                     bg-white dark:bg-slate-800/60 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
                   <span className="font-mono text-[12px] font-bold text-slate-400 shrink-0 w-20">{rangeLabel}</span>
@@ -1207,7 +1377,7 @@ function App() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { u: WS_BASE, a: t.ov_quick_ws, b: t.ov_quick_ws_d },
-              { u: null, s: 5, a: t.ov_quick_teach, b: t.ov_quick_teach_d },
+              { u: null, s: 'rs', a: t.ov_quick_teach, b: t.ov_quick_teach_d },
               { u: 'https://lolopodcast.github.io/daily-brief/', a: t.ov_quick_bench, b: t.ov_quick_bench_d },
               { u: HUB, a: t.ov_quick_hub, b: t.ov_quick_hub_d }
             ].map((q, i) => q.u ? (
@@ -1241,54 +1411,89 @@ function App() {
           <p className="text-[14px] text-slate-500 dark:text-slate-400">{t.wk_sub}</p>
         </div>
 
-        {/* 三張圖說明：後面每一週都會引用「圖一／圖二／圖三」，先在這裡定義 */}
-        <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
-          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5]">{t.wk_maps}</h3>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.wk_maps_note}</p>
-          <div className="mt-4 space-y-3">
-            {MAPS.map(m => (
-              <div key={m.code} className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4
-                pt-3 border-t border-slate-100 dark:border-slate-700">
-                <div className="shrink-0 sm:w-28">
-                  <p className="font-serif font-black text-base text-[#004030] dark:text-[#D8C3A5]">{lang === 'zh' ? m.no_zh : m.no_en}</p>
-                  <p className="font-mono text-[11px] font-bold text-slate-400">{m.code}</p>
+        {/* 三張圖說明：後面每一週都會引用「圖一／圖二／圖三」，先在這裡定義。
+            預設收合 —— 手機上不該一進來就被它佔滿整個畫面。 */}
+        <details open={mapsOpen} onToggle={(e) => toggleMaps(e.currentTarget.open)}
+          className="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700
+            border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5] overflow-hidden">
+          <summary className="list-none cursor-pointer px-5 py-4 flex items-start gap-3
+            hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+            <span className="flex-1 min-w-0">
+              <span className="block font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5]">{t.wk_maps}</span>
+              {!mapsOpen && <span className="block mt-1 text-[12px] text-slate-500 dark:text-slate-400">{t.wk_maps_peek}</span>}
+            </span>
+            <span className={`shrink-0 mt-1 text-slate-400 transition-transform ${mapsOpen ? 'rotate-180' : ''}`}>
+              <IconChevronDown />
+            </span>
+          </summary>
+          <div className="px-5 pb-5">
+            <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.wk_maps_note}</p>
+            <div className="mt-4 space-y-3">
+              {MAPS.map(m => (
+                <div key={m.code} className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4
+                  pt-3 border-t border-slate-100 dark:border-slate-700">
+                  <div className="shrink-0 sm:w-28">
+                    <p className="font-serif font-black text-base text-[#004030] dark:text-[#D8C3A5]">{lang === 'zh' ? m.no_zh : m.no_en}</p>
+                    <p className="font-mono text-[11px] font-bold text-slate-400">{m.code}</p>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <a href={m.url} target="_blank" rel="noopener noreferrer"
+                      className="group inline-flex items-start gap-1.5 text-[14px] font-bold text-slate-800 dark:text-slate-100
+                        hover:text-[#004030] dark:hover:text-[#D8C3A5]">
+                      {m[lang]}<span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+                    </a>
+                    <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? m.d_zh : m.d_en}</p>
+                    <p className="mt-1.5 text-[11px] font-bold text-slate-400">{t.wk_maps_wk} {m.wk}</p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <a href={m.url} target="_blank" rel="noopener noreferrer"
-                    className="group inline-flex items-start gap-1.5 text-[14px] font-bold text-slate-800 dark:text-slate-100
-                      hover:text-[#004030] dark:hover:text-[#D8C3A5]">
-                    {m[lang]}<span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
-                  </a>
-                  <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? m.d_zh : m.d_en}</p>
-                  <p className="mt-1.5 text-[11px] font-bold text-slate-400">{t.wk_maps_wk} {m.wk}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </Card>
+        </details>
 
         <div className="sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2
-          bg-[#f4f4f4]/95 dark:bg-[#121212]/95 backdrop-blur border-b border-slate-200/60 dark:border-slate-700/60">
-        <div ref={chipBoxRef} className="no-sb overflow-x-auto scroll-smooth">
-          <div className="flex flex-nowrap gap-2 w-max py-1">
-            {[['all', t.wk_all]].concat(['intro','arch','role','tp','build','pjm','flex'].map(b => [b, BLOCKS[b][lang]])).map(([k, label]) => {
-              const reading = ttsBlock === k;
-              return (
-                <button key={k} ref={el => { chipRefs.current[k] = el; }} onClick={() => setBlockFilter(k)}
-                  aria-current={reading ? 'true' : undefined}
-                  className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-all
-                    flex items-center gap-1.5
-                    ${blockFilter === k
-                      ? 'bg-[#004030] text-[#D8C3A5] border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]'
-                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5]'}
-                    ${reading ? 'ring-2 ring-offset-2 ring-[#004030] dark:ring-[#D8C3A5] ring-offset-[#f4f4f4] dark:ring-offset-[#121212]' : ''}`}>
-                  {reading && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" aria-hidden="true"></span>}
-                  {label}
-                </button>
-              );
-            })}
+          bg-[#f4f4f4] dark:bg-[#121212] border-b border-slate-200 dark:border-slate-700">
+          <div className="relative flex items-center gap-1">
+            {/* 往左：只有真的還有東西在左邊才出現 */}
+            <button onClick={() => nudgeChips(-1)} aria-label={t.wk_scroll_l} tabIndex={chipEdge.l ? 0 : -1}
+              className={`shrink-0 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700
+                bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300
+                hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-opacity
+                ${chipEdge.l ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <IconChevronLeft size={16} />
+            </button>
+
+            <div ref={chipBoxRef} onScroll={syncChipEdge}
+              className="no-sb overflow-x-auto scroll-smooth flex-1 min-w-0">
+              <div className="flex flex-nowrap gap-2 w-max py-1">
+                {[['all', t.wk_all, t.wk_all]].concat(['intro','arch','role','tp','build','pjm','flex']
+                  .map(b => [b, BLOCKS[b][lang === 'zh' ? 's_zh' : 's_en'], BLOCKS[b][lang]])).map(([k, label, full]) => {
+                  const reading = ttsBlock === k;
+                  return (
+                    <button key={k} ref={el => { chipRefs.current[k] = el; }} onClick={() => setBlockFilter(k)}
+                      aria-current={reading ? 'true' : undefined} title={full}
+                      className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-all
+                        flex items-center gap-1.5
+                        ${blockFilter === k
+                          ? 'bg-[#004030] text-[#D8C3A5] border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]'
+                          : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5]'}
+                        ${reading ? 'ring-2 ring-offset-2 ring-[#004030] dark:ring-[#D8C3A5] ring-offset-[#f4f4f4] dark:ring-offset-[#121212]' : ''}`}>
+                      {reading && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" aria-hidden="true"></span>}
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button onClick={() => nudgeChips(1)} aria-label={t.wk_scroll_r} tabIndex={chipEdge.r ? 0 : -1}
+              className={`shrink-0 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700
+                bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300
+                hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-opacity
+                ${chipEdge.r ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <IconChevronRight size={16} />
+            </button>
           </div>
-        </div>
         </div>
 
         <div className="space-y-3">
@@ -1350,6 +1555,85 @@ function App() {
       </div>
     );
   };
+
+  /* ==================== SDL 學習夥伴 ==================== */
+  const renderSDL = () => (
+    <div className="space-y-8 animate-fade-in">
+      <div>
+        <H2>{t.sd_title}</H2>
+        <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl">{t.sd_intro}</p>
+      </div>
+
+      <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-2">{t.sd_what}</h3>
+        <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.sd_what_p}</p>
+      </Card>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.sd_steps}</h3>
+        <div className="space-y-2">
+          {SDL_STEPS.map((x, i) => (
+            <Card key={i} className="p-4 flex gap-4">
+              <span className="shrink-0 w-7 h-7 rounded-lg bg-[#004030] dark:bg-[#D8C3A5] text-[#D8C3A5] dark:text-[#004030]
+                font-serif font-black text-sm flex items-center justify-center">{i + 1}</span>
+              <div className="min-w-0">
+                <p className="font-bold text-[14px] text-slate-800 dark:text-slate-100">{x[lang]}</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? x.d_zh : x.d_en}</p>
+                {i === 0 && <p className="mt-1.5 text-[12px] font-mono text-slate-400">{SDL_FILE} · {t.sd_ask}</p>}
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.sd_plat}</h3>
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full min-w-[600px] text-[13px] border-collapse">
+            <thead>
+              <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                <th className="py-2 pr-3 font-bold whitespace-nowrap">{t.sd_plat_c1}</th>
+                <th className="py-2 px-3 font-bold">{t.sd_plat_c2}</th>
+                <th className="py-2 pl-3 font-bold whitespace-nowrap">{t.sd_plat_c3}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SDL_PLAT.map(p2 => (
+                <tr key={p2.key} className="border-b border-slate-100 dark:border-slate-800">
+                  <td className="py-3 pr-3 font-bold text-slate-800 dark:text-slate-100 align-top whitespace-nowrap">{p2.name}</td>
+                  <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{lang === 'zh' ? p2.d_zh : p2.d_en}</td>
+                  <td className="py-3 pl-3 align-top">
+                    <a href={p2.url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[#004030] dark:text-[#D8C3A5] font-bold hover:underline whitespace-nowrap">
+                      {p2.name}<IconExternal size={12} />
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <Card className="p-5 bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800/60">
+        <h3 className="flex items-center gap-2 font-serif font-bold text-lg text-amber-900 dark:text-amber-200 mb-2">
+          <IconAlert size={18} />{t.sd_rule}
+        </h3>
+        <p className="text-[13px] leading-relaxed text-amber-900/80 dark:text-amber-100/80">{t.sd_rule_p}</p>
+      </Card>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.sd_trouble}</h3>
+        <ul className="space-y-2">
+          {[t.sd_t1, t.sd_t2, t.sd_t3, t.sd_t4].map((x, i) => (
+            <li key={i} className="flex gap-3 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">
+              <span className="text-[#004030] dark:text-[#D8C3A5] shrink-0">—</span><span>{x}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
 
   /* ==================== 2 · 期末專案 ==================== */
   const renderTP = () => {
@@ -1507,17 +1791,26 @@ function App() {
         </div>
       </section>
 
-      <section>
-        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-2">{t.as_ws}</h3>
-        <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl mb-3">{t.as_ws_p}</p>
-        <ul className="space-y-2">
+      <Card className="p-5 sm:p-6 bg-[#004030] dark:bg-[#004030] border-[#004030]">
+        <h3 className="flex items-center gap-2 font-serif font-bold text-lg text-[#D8C3A5] mb-2">
+          <IconUpload size={18} />{t.as_ws}
+        </h3>
+        <p className="text-[14px] leading-relaxed text-white/80 max-w-3xl">{t.as_ws_p1}</p>
+        <ol className="mt-4 space-y-2.5">
           {[t.as_ws_1, t.as_ws_2, t.as_ws_3].map((x, i) => (
-            <li key={i} className="flex gap-3 text-[13px] text-slate-600 dark:text-slate-300">
-              <span className="text-[#004030] dark:text-[#D8C3A5] shrink-0">—</span><span>{x}</span>
+            <li key={i} className="flex gap-3 text-[13px] leading-relaxed text-white/85">
+              <span className="shrink-0 w-5 h-5 rounded-md bg-[#D8C3A5] text-[#004030] text-[11px] font-bold
+                flex items-center justify-center">{i + 1}</span>
+              <span>{x}</span>
             </li>
           ))}
-        </ul>
-      </section>
+        </ol>
+        <div className="mt-4 pt-3 border-t border-[#D8C3A5]/30 flex items-start gap-2">
+          <span className="shrink-0 mt-0.5 text-amber-300"><IconAlert size={16} /></span>
+          <p className="text-[13px] leading-relaxed text-amber-100">{t.as_ws_warn}</p>
+        </div>
+        <p className="mt-3 text-[12px] leading-relaxed text-white/55">{t.as_ws_note}</p>
+      </Card>
 
       <section>
         <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.as_w16}</h3>
@@ -1647,11 +1940,12 @@ function App() {
   );
 
   const renderBody = () => {
-    if (section === 0) return renderOverview();
-    if (section === 1) return renderWeekly();
-    if (section === 2) return renderTP();
-    if (section === 3) return renderAssessment();
-    if (section === 4) return renderEthics();
+    if (section === 'ov') return renderOverview();
+    if (section === 'wk') return renderWeekly();
+    if (section === 'sdl') return renderSDL();
+    if (section === 'tp') return renderTP();
+    if (section === 'as') return renderAssessment();
+    if (section === 'et') return renderEthics();
     return renderResources();
   };
 
@@ -1679,7 +1973,7 @@ function App() {
                 </div>
               )}
             </div>
-            <button onClick={() => { setSection(0); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            <button onClick={() => { setSection('ov'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               aria-label={t.nav_home} className="p-2 hover:bg-white/10 rounded-lg"><IconHome size={18} /></button>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2 min-w-0">
               <span className="font-serif font-black text-[#D8C3A5] text-lg tracking-widest shrink-0">{t.brand}</span>
