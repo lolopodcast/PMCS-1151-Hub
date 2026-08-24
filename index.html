@@ -458,19 +458,53 @@ const SDL_STEPS = [
     d_en:'Type “personal SDL”. It should answer with an opening check-in asking which week and which topic. No reaction means it is not installed — go back to step 2.' }
 ];
 
-const SDL_PLAT = [
-  { name:'Claude', key:'claude',
-    d_zh:'Customize → Skills → Add，上傳整包 zip，然後把它打開。若 Add 是灰的，先到 Settings → Capabilities 把程式碼執行（code execution）打開。免費方案也可以用。',
-    d_en:'Customize → Skills → Add, upload the zip, then switch it on. If Add is greyed out, first enable code execution in Settings → Capabilities. Available on the free plan.',
-    url:'https://support.claude.com/en/articles/12512198-how-to-create-custom-skills' },
-  { name:'ChatGPT', key:'chatgpt',
-    d_zh:'ChatGPT 沒有 skill 這個東西，改用專案：新增一個名為 PMCS SDL 的 Project，點右上角三個點 → Project settings，把 SKILL.md 的內容整段貼進 instructions。之後在這個專案裡開對話。免費方案也能建專案。',
-    d_en:'ChatGPT has no “skills”. Use a project instead: create one called PMCS SDL, open the three-dot menu → Project settings, and paste the whole SKILL.md text into the instructions. Start your conversations inside that project. Free accounts can create projects.',
-    url:'https://help.openai.com/en/articles/10169521-using-projects-in-chatgpt' },
-  { name:'Gemini', key:'gemini',
-    d_zh:'用 Gem：側邊欄 → Gems → New Gem，名稱取 PMCS SDL，把 SKILL.md 的內容整段貼進指示欄，存檔。之後每次從這個 Gem 開始對話。',
-    d_en:'Use a Gem: sidebar → Gems → New Gem, name it PMCS SDL, paste the whole SKILL.md text into the instructions, and save. Start each conversation from that Gem.',
-    url:'https://support.google.com/gemini/answer/15146780' }
+/* 兩條路線：A 對話介面（多數同學）／B 開發者工具（Agent Skills 開放標準）。
+   路線 B 的工具都直接讀同一份 SKILL.md，不必改寫任何內容。 */
+const SDL_ROUTES = [
+  { key:'a',
+    zh:'路線 A · 對話介面', en:'Route A · Chat interfaces',
+    d_zh:'你平常在用的 AI 網頁或 App。多數同學走這一條，不需要任何開發環境。',
+    d_en:'The AI web app you already use. Most students take this route; no development environment is needed.',
+    rows:[
+      { name:'Claude', key:'claude',
+        d_zh:'唯一直接吃 skill 的對話介面。Customize → Skills → Add，上傳整包 zip，然後把它打開。若 Add 是灰的，先到 Settings → Capabilities 把程式碼執行（code execution）打開。免費方案也可以用。',
+        d_en:'The only chat interface that takes the skill directly. Customize → Skills → Add, upload the zip, then switch it on. If Add is greyed out, first enable code execution in Settings → Capabilities. Available on the free plan.',
+        url:'https://support.claude.com/en/articles/12512198-how-to-create-custom-skills' },
+      { name:'ChatGPT', key:'chatgpt',
+        d_zh:'對話介面本身不吃 skill，改用專案：新增一個名為 PMCS SDL 的 Project，點右上角三個點 → Project settings，把 SKILL.md 的內容整段貼進 instructions。之後在這個專案裡開對話。免費方案也能建專案。',
+        d_en:'The chat interface itself does not take skills — use a project instead. Create one called PMCS SDL, open the three-dot menu → Project settings, and paste the whole SKILL.md text into the instructions. Start your conversations inside that project. Free accounts can create projects.',
+        url:'https://help.openai.com/en/articles/10169521-using-projects-in-chatgpt' },
+      { name:'Gemini', key:'gemini',
+        d_zh:'用 Gem：側邊欄 → Gems → New Gem，名稱取 PMCS SDL，把 SKILL.md 的內容整段貼進指示欄，存檔。之後每次從這個 Gem 開始對話。',
+        d_en:'Use a Gem: sidebar → Gems → New Gem, name it PMCS SDL, paste the whole SKILL.md text into the instructions, and save. Start each conversation from that Gem.',
+        url:'https://support.google.com/gemini/answer/15146780' }
+    ] },
+  { key:'b',
+    zh:'路線 B · 開發者工具', en:'Route B · Developer tools',
+    d_zh:'如果你已經在用這些工具，直接把 sdl-review 整個資料夾放進該工具的 skills 目錄就好，不必貼、不必改寫——它們讀的是同一份 SKILL.md。',
+    d_en:'If you already use one of these, just drop the whole sdl-review folder into that tool’s skills directory. Nothing to paste, nothing to rewrite — they all read the same SKILL.md.',
+    rows:[
+      { name:'Claude Code', key:'cc',
+        d_zh:'放進專案的 .claude/skills/，或個人的 ~/.claude/skills/。放好即生效，也可以用 /sdl-review 直接叫它。',
+        d_en:'Drop it in the project’s .claude/skills/ or your personal ~/.claude/skills/. It works as soon as it is there, and you can also invoke it directly with /sdl-review.',
+        url:'https://code.claude.com/docs/en/skills' },
+      { name:'Codex', key:'codex',
+        d_zh:'CLI 與編輯器擴充都支援。注意：skill 是 Codex 的功能，ChatGPT Work 那一側沒有。',
+        d_en:'Supported in both the CLI and the editor extension. Note that skills are a Codex feature — the ChatGPT Work side does not have them.',
+        url:'https://developers.openai.com/codex/skills/' },
+      { name:'Antigravity', key:'antig',
+        d_zh:'原生支援 Agent Skills，依官方說明放進對應目錄即可。',
+        d_en:'Supports Agent Skills natively; follow the official page for the directory it reads.',
+        url:'https://antigravity.google/docs/skills' },
+      { name:'Gemini CLI', key:'gcli',
+        d_zh:'同樣讀 SKILL.md，安裝位置見官方說明。',
+        d_en:'Reads the same SKILL.md; see the official page for where to put it.',
+        url:'https://geminicli.com/docs/cli/skills/' },
+      { name:'Cursor / VS Code / GitHub Copilot', key:'ide',
+        d_zh:'三者都已支援 Agent Skills，放進各自的 skills 目錄即可。',
+        d_en:'All three support Agent Skills; put the folder in each tool’s skills directory.',
+        url:'https://code.visualstudio.com/docs/copilot/customization/agent-skills' }
+    ] }
 ];
 
 /* ==================== 課堂上說的「三張圖」 ==================== */
@@ -605,17 +639,18 @@ en: {
   sd_title: 'Installing the SDL learning partner',
   sd_intro: 'Every worksheet from W3 onwards expects you to work through it with the SDL learning partner — a course-specific instruction set that turns your AI into a Socratic study partner and produces the KB snapshot you hand in. You install it once, at the start of term, and use the same one every week.',
   sd_what: 'What it actually is',
-  sd_what_p: 'A text file of instructions, not an app. Claude calls this kind of thing a skill; ChatGPT and Gemini have no equivalent, so there you paste the same text into a project or a Gem. The behaviour is the same either way: it registers who you are, asks you questions instead of handing you answers, and at the end writes a KB.md you can submit.',
+  sd_what_p: 'A text file of instructions, not an app. The format is called Agent Skills and it is now an open standard, so the same folder works in more than forty tools. Among the chat interfaces only Claude takes it directly; on ChatGPT and Gemini you paste the same text into a project or a Gem. If you already use a developer tool such as Claude Code, Codex or Cursor, you drop the folder in and you are done. The behaviour is identical either way: it registers who you are, asks you questions instead of handing you answers, and at the end writes a KB.md you can submit.',
   sd_steps: 'Four steps',
-  sd_plat: 'Where it goes, per platform',
-  sd_plat_c1: 'Platform', sd_plat_c2: 'How to install it', sd_plat_c3: 'Official guide',
+  sd_plat: 'Two routes — pick one',
+  sd_plat_c1: 'Tool', sd_plat_c2: 'How to install it', sd_plat_c3: 'Official guide',
+  sd_plat_note: 'Agent Skills is an open standard, so the list is far longer than this — if your tool is not here, check the client showcase at agentskills.io. Two things students ask about: ChatGPT Work does not take skills (that is the Codex side of the product), and Gemini Spark needs an AI Ultra plan and integrates through MCP rather than skills. Neither is worth buying for this course.',
   sd_trouble: 'If it does not respond',
   sd_t1: 'On Claude: check that the skill is switched on in Customize → Skills, and that code execution is enabled in Settings → Capabilities.',
   sd_t2: 'On ChatGPT: make sure you opened the conversation inside the project, not in a plain chat.',
   sd_t3: 'On Gemini: start the conversation from the Gem itself, not from the main Gemini page.',
   sd_t4: 'On any platform: start a fresh conversation. One learning activity is one conversation — that is also what makes your transcript usable as evidence.',
   sd_rule: 'One activity, one conversation',
-  sd_rule_p: 'The transcript is part of what you hand in, so it has to be clean. Do not run a worksheet inside a conversation already full of unrelated chat — open a new one. What you submit must be the exported transcript in full, never a summary of it.',
+  sd_rule_p: 'Your transcript is required evidence, so it has to be clean. Do not run a worksheet inside a conversation already full of unrelated chat — open a new one. What you keep is the whole conversation as plain text, head to tail; a summary or a rewritten version does not count. Assessment explains exactly how to get it out.',
   sd_ask: 'Ask your instructor for the file',
 
 
@@ -678,9 +713,18 @@ en: {
   as_weights: 'Grade weights',
   as_ws: 'How worksheets are submitted — read this once',
   as_ws_p1: 'Nothing you type into a worksheet is ever sent anywhere. It stays in your own browser, which means the worksheet cannot hand anything in for you. You do that yourself, in three steps.',
-  as_ws_1: 'Fill the worksheet in. Personal sections export as Markdown; group sections export as CSV, one file per team.',
-  as_ws_2: 'Export the file from the worksheet, then export the full transcript of your SDL conversation as well.',
-  as_ws_3: 'Upload both to Moodle. Submitting freezes them — you cannot revise afterwards.',
+  as_ws_1: 'Fill the worksheet in. Sections 2 to 4 are yours alone; sections 1, 5, 6 and 7 are the group\'s consolidated work.',
+  as_ws_2: 'Export your own sections as Markdown and save your SDL transcript as .txt. Both go into the group\'s shared folder rather than to Moodle — the individual layer is not handed in, but the teaching team can ask to see it at any point.',
+  as_ws_3: 'The week\'s compiler exports the group version (.csv and .md) and uploads it to Moodle before the deadline. Until the deadline it can be replaced as often as needed.',
+  as_tx: 'Getting the transcript out',
+  as_tx_p: 'None of the three platforms can export a single conversation. The account-wide export is the wrong tool — it sends you everything you have ever written and takes days to arrive. So you do this by hand, and it takes about a minute. The one catch: the page only keeps the messages near your viewport in the document, so selecting everything without scrolling first gives you a transcript with the middle missing.',
+  as_tx_1: 'Scroll to the very top of the conversation, then scroll slowly all the way back down. That forces every message to render.',
+  as_tx_2: 'Ctrl+A (Cmd+A on a Mac) to select all, then copy.',
+  as_tx_3: 'Paste into a plain text editor and save as .txt. Not Word, not PDF — plain text is what we read. Renaming it to .md is fine.',
+  as_tx_4: 'Check the head and the tail: your first question at the top, the last reply at the bottom. If either is missing you lost part of the middle — go back to step 1.',
+  as_tx_no: 'A summary, a rewritten version or a share link is not a transcript and does not count as one.',
+  as_dl: 'How the deadline works',
+  as_dl_p: 'One assignment per week on Moodle, one fixed deadline. Before it passes the compiler may upload again as often as needed — the newest file counts, and because every filename carries a timestamp nothing is overwritten. When the deadline passes the assignment closes. Revisions made after class belong in the separate bonus-assignment (BA) area, which stays open all term; they are not a second attempt at the weekly assignment.',
   as_ws_warn: 'Name every file in ASCII. Chinese filenames are lost by Chromium on download and cause trouble on upload.',
   as_ws_note: 'Answers live in your browser\'s localStorage: clearing the cache, using a private window or moving to another computer starts you from blank. Export as you go rather than the night before.',
   as_w16: 'The five acceptance items at W16',
@@ -732,17 +776,18 @@ zh: {
   sd_title: '安裝「SDL 學習夥伴」',
   sd_intro: 'W3 以後每一份學習單，都預設你會搭配「SDL 學習夥伴」一起做——那是一份課程專用的指示檔，把你的 AI 變成會反問你的學習夥伴，並在結束時產出你要繳交的 KB 快照。開學裝一次，之後每一週都用同一個。',
   sd_what: '它到底是什麼',
-  sd_what_p: '它是一份文字指示檔，不是一個 app。Claude 把這種東西叫做 skill；ChatGPT 與 Gemini 沒有對應的東西，所以改把同一份文字貼進專案或 Gem。三個平台的行為一樣：先登記你是誰，接著用反問引導你自己想，最後幫你寫出一份可以繳交的 KB.md。',
+  sd_what_p: '它是一份文字指示檔，不是一個 app。這個格式叫做 Agent Skills，現在已經是開放標準，同一個資料夾在四十幾種工具裡都能用。在對話介面裡只有 Claude 直接吃它；ChatGPT 與 Gemini 要把同一份文字貼進專案或 Gem。如果你本來就在用 Claude Code、Codex、Cursor 這類開發者工具，把資料夾丟進去就好。不論走哪一條，行為都一樣：先登記你是誰，接著用反問引導你自己想，最後幫你寫出一份可以繳交的 KB.md。',
   sd_steps: '四個步驟',
-  sd_plat: '三個平台各自怎麼裝',
-  sd_plat_c1: '平台', sd_plat_c2: '安裝方式', sd_plat_c3: '官方說明',
+  sd_plat: '兩條路線，挑一條',
+  sd_plat_c1: '工具', sd_plat_c2: '安裝方式', sd_plat_c3: '官方說明',
+  sd_plat_note: 'Agent Skills 是開放標準，支援的工具遠不止這些——你用的工具不在表上，可以到 agentskills.io 的清單找。兩個常被問到的：ChatGPT Work 本身不吃 skill（那是產品裡 Codex 那一側的功能）；Gemini Spark 需要 AI Ultra 方案，而且走的是 MCP 不是 skill。這兩個都不必為了這門課去買。',
   sd_trouble: '如果它沒反應',
   sd_t1: 'Claude：確認 Customize → Skills 裡這個 skill 是開啟的，而且 Settings → Capabilities 的程式碼執行已經打開。',
   sd_t2: 'ChatGPT：確認你是在那個專案裡面開對話，不是在一般聊天視窗。',
   sd_t3: 'Gemini：要從那個 Gem 進去開對話，不是從 Gemini 首頁。',
   sd_t4: '三個平台通用：開一個全新的對話。一次學習活動就是一個對話——這也是逐字稿能當學習證據的前提。',
   sd_rule: '一次活動，一個對話',
-  sd_rule_p: '逐字稿是繳交項目之一，所以必須乾淨。不要在一個已經聊了一堆別的事情的對話裡做學習單，開一個新的。繳交的逐字稿必須是匯出的原始全文，不能用摘要或改寫版充當。',
+  sd_rule_p: '逐字稿是必備的學習證據，所以必須乾淨。不要在一個已經聊了一堆別的事情的對話裡做學習單，開一個新的。保存的是整段對話的純文字，從頭到尾；摘要或改寫版不予採計。實際怎麼弄出來，見「評量與繳交」。',
   sd_ask: '檔案請向教師索取',
 
 
@@ -801,9 +846,18 @@ zh: {
   as_weights: '成績配分',
   as_ws: '學習單怎麼交 —— 這段請先看過一次',
   as_ws_p1: '你在學習單裡打的任何東西都不會送到任何地方，它只存在你自己的瀏覽器裡。也就是說，學習單本身沒辦法替你交作業，要你自己交，三個步驟。',
-  as_ws_1: '把學習單填完。個人段落匯出 Markdown；小組段落匯出 CSV，每組一份。',
-  as_ws_2: '從學習單匯出檔案，並且把 SDL 對話的逐字稿也整份匯出。',
-  as_ws_3: '兩份都上傳到 Moodle。繳交即凍結，之後不能再改。',
+  as_ws_1: '把學習單填完。第 2 至 4 節是你自己做的；第 1、5、6、7 節是小組綜整的成果。',
+  as_ws_2: '把你自己那幾節匯出成 Markdown，並把 SDL 逐字稿存成 .txt。這兩份放進小組共用資料夾，不上 Moodle——個人層不繳交，但教學團隊隨時調閱得到。',
+  as_ws_3: '本週彙整人匯出小組版（.csv 與 .md），在繳交期限前上傳 Moodle。期限前可以重複上傳、隨時更換。',
+  as_tx: '逐字稿怎麼弄出來',
+  as_tx_p: '三個平台都沒有「匯出這一個對話」的功能。帳號整批匯出不是這件事的工具——它會把你寫過的所有東西一次寄給你，而且要等好幾天。所以用手動的，大概一分鐘。唯一要注意的是：網頁只會把你視窗附近的訊息放進文件裡，所以沒有先捲過就直接全選，複製到的逐字稿中間會整段不見。',
+  as_tx_1: '先捲到對話最上面，再慢慢往下捲回最底，讓每一則訊息都算繪過一次。',
+  as_tx_2: 'Ctrl+A（Mac 是 Cmd+A）全選，然後複製。',
+  as_tx_3: '貼進純文字編輯器，存成 .txt。不要用 Word，也不要轉成 PDF——我們是讀純文字。要把副檔名改成 .md 也可以。',
+  as_tx_4: '檢查頭尾：最上面要看得到你的第一則提問，最下面要看得到最後一則回覆。少了任何一端，就是中間掉了，回到第 1 步重來。',
+  as_tx_no: '摘要、改寫版、分享連結都不是逐字稿，不予採計。',
+  as_dl: '繳交期限怎麼算',
+  as_dl_p: '每週一個 Moodle 作業，一個固定期限。期限前彙整人想重傳幾次都可以，以最新的一份為準；檔名帶時間戳，所以不會蓋掉前一版。期限一到，作業就關閉。課後依課堂討論修訂的版本，請放到另一個「加分作業（BA）」繳交區，那一區整學期開放——它不是這一份週作業的第二次機會。',
   as_ws_warn: '所有檔名一律用 ASCII。中文檔名在 Chromium 下載時會遺失，上傳也容易出問題。',
   as_ws_note: '作答存在瀏覽器的 localStorage：清快取、用無痕視窗、換一台電腦，都會是空白的。邊做邊匯出，不要留到繳交前一晚。',
   as_w16: 'W16 的五項驗收',
@@ -1146,7 +1200,12 @@ function App() {
       } else if (section === 'as') {
         put(t.as_title); put(t.as_weights);
         GRADE.forEach(g => put(`${g[lang]} ${g.pct}%`));
-        put(t.as_ws); put(t.as_ws_p1); put(t.as_ws_1); put(t.as_ws_2); put(t.as_ws_3); put(t.as_ws_warn); put(t.as_w16);
+        put(t.as_ws); put(t.as_ws_p1); put(t.as_ws_1); put(t.as_ws_2); put(t.as_ws_3); put(t.as_ws_warn);
+        put(t.as_tx); put(t.as_tx_p);
+        [t.as_tx_1, t.as_tx_2, t.as_tx_3, t.as_tx_4].forEach((x, i) => put(`${i + 1}. ${x}`));
+        put(t.as_tx_no);
+        put(t.as_dl); put(t.as_dl_p);
+        put(t.as_w16);
         W16_CHECK.forEach(c => put(`${c[lang]}. ${lang === 'zh' ? c.e_zh : c.e_en}`));
       } else if (section === 'et') {
         put(t.et_title); put(t.et_intro);
@@ -1157,7 +1216,12 @@ function App() {
         put(t.sd_title); put(t.sd_intro);
         SDL_STEPS.forEach((x, i) => put(`${i + 1}. ${x[lang]}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
         put(t.sd_plat);
-        SDL_PLAT.forEach(x => put(`${x.name}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
+        SDL_ROUTES.forEach(r => {
+          put(`${r[lang]}. ${lang === 'zh' ? r.d_zh : r.d_en}`);
+          r.rows.forEach(x => put(`${x.name}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
+        });
+        put(t.sd_plat_note);
+        put(t.sd_rule); put(t.sd_rule_p);
       } else {
         put(t.rs_title); put(t.rs_teach);
         TEACH.forEach(x => put(`${x.code}. ${x[lang]}`));
@@ -1586,33 +1650,47 @@ function App() {
         </div>
       </section>
 
-      <section>
-        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.sd_plat}</h3>
-        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-          <table className="w-full min-w-[600px] text-[13px] border-collapse">
-            <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                <th className="py-2 pr-3 font-bold whitespace-nowrap">{t.sd_plat_c1}</th>
-                <th className="py-2 px-3 font-bold">{t.sd_plat_c2}</th>
-                <th className="py-2 pl-3 font-bold whitespace-nowrap">{t.sd_plat_c3}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SDL_PLAT.map(p2 => (
-                <tr key={p2.key} className="border-b border-slate-100 dark:border-slate-800">
-                  <td className="py-3 pr-3 font-bold text-slate-800 dark:text-slate-100 align-top whitespace-nowrap">{p2.name}</td>
-                  <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{lang === 'zh' ? p2.d_zh : p2.d_en}</td>
-                  <td className="py-3 pl-3 align-top">
-                    <a href={p2.url} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[#004030] dark:text-[#D8C3A5] font-bold hover:underline whitespace-nowrap">
-                      {p2.name}<IconExternal size={12} />
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <section className="space-y-6">
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5]">{t.sd_plat}</h3>
+
+        {SDL_ROUTES.map(r => (
+          <div key={r.key}>
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
+              <span className="font-serif font-bold text-[15px] text-slate-800 dark:text-slate-100">{r[lang]}</span>
+            </div>
+            <p className="text-[13px] leading-relaxed text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">
+              {lang === 'zh' ? r.d_zh : r.d_en}
+            </p>
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+              <table className="w-full min-w-[600px] text-[13px] border-collapse">
+                <thead>
+                  <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                    <th className="py-2 pr-3 font-bold whitespace-nowrap">{t.sd_plat_c1}</th>
+                    <th className="py-2 px-3 font-bold">{t.sd_plat_c2}</th>
+                    <th className="py-2 pl-3 font-bold whitespace-nowrap">{t.sd_plat_c3}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {r.rows.map(p2 => (
+                    <tr key={p2.key} className="border-b border-slate-100 dark:border-slate-800">
+                      <td className="py-3 pr-3 font-bold text-slate-800 dark:text-slate-100 align-top whitespace-nowrap">{p2.name}</td>
+                      <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{lang === 'zh' ? p2.d_zh : p2.d_en}</td>
+                      <td className="py-3 pl-3 align-top">
+                        <a href={p2.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[#004030] dark:text-[#D8C3A5] font-bold hover:underline whitespace-nowrap">
+                          {t.sd_plat_c3}<IconExternal size={12} />
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+
+        <p className="text-[12px] leading-relaxed text-slate-500 dark:text-slate-400 max-w-3xl
+          border-l-2 border-slate-200 dark:border-slate-700 pl-3">{t.sd_plat_note}</p>
       </section>
 
       <Card className="p-5 bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800/60">
@@ -1810,6 +1888,29 @@ function App() {
           <p className="text-[13px] leading-relaxed text-amber-100">{t.as_ws_warn}</p>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-white/55">{t.as_ws_note}</p>
+      </Card>
+
+      <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-2">{t.as_tx}</h3>
+        <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl">{t.as_tx_p}</p>
+        <ol className="mt-4 space-y-2.5">
+          {[t.as_tx_1, t.as_tx_2, t.as_tx_3, t.as_tx_4].map((x, i) => (
+            <li key={i} className="flex gap-3 text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">
+              <span className="shrink-0 w-5 h-5 rounded-md bg-[#004030] dark:bg-[#D8C3A5] text-[#D8C3A5] dark:text-[#004030]
+                text-[11px] font-bold flex items-center justify-center">{i + 1}</span>
+              <span>{x}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex items-start gap-2">
+          <span className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"><IconAlert size={16} /></span>
+          <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.as_tx_no}</p>
+        </div>
+      </Card>
+
+      <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-2">{t.as_dl}</h3>
+        <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl">{t.as_dl_p}</p>
       </Card>
 
       <section>
