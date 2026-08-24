@@ -23,6 +23,8 @@ One self-contained HTML file. React, Tailwind and DOMPurify load from pinned CDN
 
 The hub installs to a phone home screen or a desktop dock: `manifest.webmanifest` plus `sw.js`, four PNG icons and the meta tags in `<head>`. `start_url` and `scope` are relative (`./`) so it works from the `/PMCS-1151-Hub/` sub-path.
 
+*Overview* carries a short card telling students where the install control actually is, because nobody finds it unaided: on desktop Chrome it is the small screen-with-an-arrow icon at the right of the address bar (or ⋮ → Cast, save and share → Install page as app), on Android it is ⋮ → Install app, and on iPhone it **must** be Safari's Share → Add to Home Screen — Chrome on iOS cannot install a web app at all, which students otherwise read as a broken page. The card hides itself when the page is already running standalone (`isStandalone` checks `display-mode: standalone`, `display-mode: fullscreen` and iOS's own `navigator.standalone`), and read-aloud skips it on the same condition, so what is heard matches what is shown.
+
 The service worker is **network-first for same-origin requests** and cache-first only for the whitelisted CDN hosts. That ordering is deliberate: the commonest PWA failure is a student pinned to a stale cached page after you redeploy. Here a new deploy is picked up the moment they are online; the cache only serves them when the network does not answer. A new `VERSION` string in `sw.js` drops every older cache, and an updated worker calls `skipWaiting` then reloads the page once.
 
 Registration is skipped on any host other than `lolopodcast.github.io`, `localhost` and `127.0.0.1`, and a failed registration is swallowed — the page works exactly the same without it.
