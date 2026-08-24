@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Prof. Shihmin Lo">
+<meta name="description" content="PMCS (EMI) Course Hub — Introduction to Project Management and Career Strategy as a Product Manager in the AI Era. Semester 1151, Prof. Shihmin Lo, NCNU IBS.">
+<title>PMCS · Course Hub — PM Career Strategy & Project Management in the AI Era</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], serif: ['Merriweather','serif'] } } }
+};
+</script>
+
+<style>
+  html, body { overflow-x: clip; }
+  body { font-family: 'Inter', sans-serif; }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
+  .animate-fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+  header, footer, button, [role="button"], .ui-decoration { -webkit-user-select: none; user-select: none; }
+  input, textarea, select { -webkit-user-select: text; user-select: text; }
+  input[type="password"]::-ms-reveal { display: none; }
+  #cw-toast {
+    position: fixed; left: 50%; bottom: 3.5rem; transform: translateX(-50%);
+    background: #004030; color: #D8C3A5; padding: 10px 18px; border-radius: 10px;
+    font-family: Inter, sans-serif; font-size: 13px; letter-spacing: .02em;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35); border: 1px solid rgba(216,195,165,.35);
+    z-index: 9999; opacity: 0; transition: opacity .25s ease;
+    pointer-events: none; max-width: 90vw; text-align: center;
+  }
+  #cw-toast.show { opacity: 1; }
+  @media print { header, footer, #cw-toast { display: none !important; } }
+</style>
+</head>
+<body class="bg-[#f4f4f4] dark:bg-[#121212] text-slate-800 dark:text-slate-200 font-sans selection:bg-[#004030] selection:text-white dark:selection:bg-[#D8C3A5] dark:selection:text-[#004030]">
+<div id="root"></div>
+<div id="cw-toast"></div>
+
+<script>
+/* ============ 前端防禦機制（於 React 掛載前執行） ============ */
+(function () {
+  /* --- Domain Lock --- */
+  var ALLOWED = ['lolopodcast.github.io', 'localhost', '127.0.0.1'];
+  var REDIRECT = 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo';
+  var host = location.hostname;
+  var ok = (host === '' || host === 'null') ? true : ALLOWED.some(function (d) {
+    return host === d || host.endsWith('.' + d);
+  });
+  if (!ok) {
+    document.body.innerHTML = DOMPurify.sanitize('<div style="text-align:center;padding:60px;font-family:sans-serif"><h1>Access Denied</h1><p>This resource is not authorised on this domain.</p></div>');
+    setTimeout(function () { location.href = REDIRECT; }, 3000);
+    return;
+  }
+  /* --- Iframe Busting --- */
+  if (window.self !== window.top) {
+    try { window.top.location.href = window.self.location.href; }
+    catch (e) {
+      document.body.innerHTML = DOMPurify.sanitize('<div style="text-align:center;padding:60px;font-family:sans-serif"><h1>Frame Blocked</h1><p>This content cannot be embedded.</p></div>');
+    }
+  }
+})();
+
+/* ============ 版權提示 Toast ============ */
+var COPYRIGHT_MSG = 'Intellectual Property of Prof. Shihmin Lo';
+var _cwToastTimer = null;
+function showCopyrightToast(msg) {
+  var el = document.getElementById('cw-toast');
+  if (!el) return;
+  el.innerHTML = DOMPurify.sanitize('&copy; ' + (msg || COPYRIGHT_MSG));
+  el.classList.add('show');
+  if (_cwToastTimer) clearTimeout(_cwToastTimer);
+  _cwToastTimer = setTimeout(function () { el.classList.remove('show'); }, 2000);
+}
+window.showCopyrightToast = showCopyrightToast;
+
+/* ============ 智慧型右鍵與快捷鍵攔截 ============ */
+document.addEventListener('contextmenu', function (e) {
+  var selection = (window.getSelection() ? window.getSelection().toString() : '').trim();
+  var tag = e.target && e.target.tagName ? e.target.tagName.toUpperCase() : '';
+  var isForm = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
+  if (isForm) return true;
+  if (selection.length > 0) return true;   /* 有反白 → 允許（查字典 / 複製筆記） */
+  e.preventDefault();
+  showCopyrightToast();
+});
+
+document.addEventListener('keydown', function (e) {
+  var k = (e.key || '').toLowerCase();
+  if (e.key === 'F12') { e.preventDefault(); showCopyrightToast(); return; }
+  if (e.ctrlKey && !e.shiftKey && k === 'u') { e.preventDefault(); showCopyrightToast(); return; }
+  if (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].indexOf(k) !== -1) { e.preventDefault(); showCopyrightToast(); return; }
+  /* Ctrl+P（列印）與 Ctrl+S（存檔）刻意開放，確保學生可離線複習 */
+});
+
+document.addEventListener('dragstart', function (e) {
+  var tag = e.target && e.target.tagName ? e.target.tagName.toUpperCase() : '';
+  if (tag === 'IMG' || (e.target.closest && e.target.closest('svg'))) e.preventDefault();
+});
+
+/* ============ DOMPurify 安全包裝（動態 HTML 插入用） ============ */
+window.safeHTML = function (raw) {
+  try { return DOMPurify.sanitize(String(raw)); }
+  catch (err) { return ''; }
+};
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ==================== SVG Icon 元件 ==================== */
+const IconMenu = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>);
+const IconX = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>);
+const IconMoon = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>);
+const IconSun = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>);
+const IconPlay = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>);
+const IconPause = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>);
+const IconSquare = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>);
+const IconHome = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>);
+const IconGlobe = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>);
+const IconCalendar = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>);
+const IconTarget = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>);
+const IconScale = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>);
+const IconShield = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>);
+const IconLayers = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>);
+const IconExternal = ({size=14}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>);
+const IconChevronDown = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>);
+const IconEye = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>);
+const IconEyeOff = ({size=18}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M6.61 6.61A18.4 18.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>);
+const IconLock = ({size=20}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>);
+const IconFile = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>);
+const IconVideo = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>);
+const IconBook = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>);
+
+/* ==================== 課程常數 ==================== */
+const W1_DATE   = '2026-09-09';          /* W1 上課日（週三） */
+const DDAY_WEEK = 15;                     /* D day＝W15 上課日 */
+const WS_BASE   = 'https://lolopodcast.github.io/PMCS-1151/';
+const HUB       = 'https://lolopodcast.github.io/AI-Workshop-Hub/';
+const PASS      = 'proflolothebest';
+
+const weekDate = (n) => {
+  const d = new Date(W1_DATE + 'T00:00:00');
+  d.setDate(d.getDate() + (n - 1) * 7);
+  return d;
+};
+const fmtDate = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+const fmtFull = (d) => `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+const daysBetween = (a, b) => Math.round((b - a) / 86400000);
+
+/* ==================== 四個區塊 ==================== */
+const BLOCKS = {
+  intro: { zh: '導論', en: 'Introduction', color: 'slate' },
+  arch:  { zh: '概念層 · AI 世代的工作架構', en: 'Concept · The Architecture of Working with AI', color: 'emerald' },
+  role:  { zh: '角色層 · PM 的角色、職能與職涯', en: 'Role · PM Role, Competency and Career', color: 'sky' },
+  build: { zh: '實作層 · 建置你的晨報 Agent', en: 'Build · Building Your Morning-Brief Agent', color: 'amber' },
+  pjm:   { zh: '落實層 · 專案管理：規劃→控制→交付', en: 'Deliver · Project Management: Plan → Control → Deliver', color: 'rose' },
+  tp:    { zh: '期末專案節點 · 提案與驗收', en: 'Term Project · Proposal and Acceptance', color: 'indigo' },
+  flex:  { zh: '彈性教學 · 自主學習', en: 'Flexible · Self-Directed Learning', color: 'violet' }
+};
+
+/* k: main=主教材必讀第一項 / read=必讀 / opt=選讀 / yt=影音 / pdf=講義 */
+const WEEKS = [
+{ n:1, block:'intro', zh:{t:'課程導論', s:'看見終點：這學期你會做出什麼',
+  f:'現場打開 LoLo’s Daily Brief，說明「這學期結束時，每一組都會有一個這樣的網址，而且是關於你想去的產業在找什麼樣的人」。',
+  sdl:'課前完成 Worksheet-W1 Part A（手寫，不使用 AI）'},
+  en:{t:'Orientation', s:'See the finish line: what you will have built',
+  f:'Open LoLo’s Daily Brief live. By the end of term every group will own a URL like this — about the industry they want to enter.',
+  sdl:'Complete Worksheet-W1 Part A before class (handwritten, no AI)'},
+  mats:[
+   {k:'main', zh:'LoLo’s Daily Brief — TP 的標竿示範', en:'LoLo’s Daily Brief — the benchmark for your Term Project', url:'https://lolopodcast.github.io/daily-brief/'},
+   {k:'yt', zh:'EP28a · See the World, Understand Industry, Shape Yourself（5 分鐘，中文字幕）', en:'EP28a · See the World, Understand Industry, Shape Yourself (5 min, Chinese subtitles)', url:'https://youtu.be/RVeT7DyKTYE'}
+  ], ws:null },
+
+{ n:2, block:'intro', zh:{t:'分組與訂閱方案決策', s:'每組需要一個技術點火者',
+  f:'分組規則：每組至少一名對工具操作有興趣或經驗者。收技術與工具經驗自評三題用於分組平衡。本課程要求具備 AI 付費方案，組員間可互相支援。',
+  sdl:'課中完成 Worksheet-W1 Part B'},
+  en:{t:'Team Building', s:'Every team needs one technical igniter',
+  f:'Grouping rule: each team needs at least one member comfortable with tooling. A three-item self-assessment balances the teams. A paid AI plan is required; teammates may share.',
+  sdl:'Complete Worksheet-W1 Part B during class'},
+  mats:[
+   {k:'main', zh:'AI Ecosystem Comparison — Claude vs ChatGPT vs Gemini', en:'AI Ecosystem Comparison — Claude vs ChatGPT vs Gemini', url:'https://lolopodcast.github.io/AI-Ecosystem-Comparison/'},
+   {k:'read', zh:'EMI-AI 自我介紹練習（支援 1 分鐘自介影片）', en:'EMI-AI Personal Introduction Practice', url:'https://lolopodcast.github.io/EMI-AI-Self-Introduction/'}
+  ], ws:null },
+
+{ n:3, block:'arch', zh:{t:'AI 工作環境的層級模型（圖二）', s:'我的工作到底放在哪裡？',
+  f:'九層模型：裝置／使用者／AI 平台／帳號方案 Workspace／工作介面／工作模式／工作容器／任務／Context Window。先把地基講清楚，後面所有操作才站得住。',
+  sdl:'建立一個 AI Project、在自己電腦建立專用工作資料夾、實測 context window 被壓縮後會發生什麼'},
+  en:{t:'The Layers of an AI Work Environment (Map 2)', s:'Where does your work actually live?',
+  f:'Nine layers: device, user, AI platform, account/plan/workspace, interface, mode, container, task, context window. Get the ground right and everything above it holds.',
+  sdl:'Create an AI Project, create a dedicated working folder on your own machine, and observe what a compressed context window does'},
+  mats:[
+   {k:'main', zh:'T1 · AIWE — AI 工作環境的層級模型', en:'T1 · AIWE — The Layers of an AI Work Environment', url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/'},
+   {k:'read', zh:'AIWF · AI 工作流方法論（對應第 5、6 層）', en:'AIWF · AI Workflow Methodology (layers 5 and 6)', url:'https://lolopodcast.github.io/AI-Workflow-Methodology/'},
+   {k:'read', zh:'Git & GitHub Essentials for Non-Coders（對應第 7 層，並為 W10 鋪路）', en:'Git & GitHub Essentials for Non-Coders (layer 7; sets up W10)', url:'https://lolopodcast.github.io/Git-GitHub-VibeCoding-for-Non-Coders/'},
+   {k:'opt', zh:'AI Ecosystem Comparison（第 3 層，W2 已看過，此處回扣）', en:'AI Ecosystem Comparison (layer 3, revisited from W2)', url:'https://lolopodcast.github.io/AI-Ecosystem-Comparison/'}
+  ], ws:{c:'W03'} },
+
+{ n:4, block:'arch', zh:{t:'四種 Engineering（圖一 01、02 區）', s:'一套 Agent 系統的四個設計構面',
+  f:'Prompt（這一次要怎麼說）／Context（這一輪應看見什麼）／Harness（在哪裡做、能做什麼）／Loop（如何反覆做到通過）。搭配運作架構：Project → 持久資產 → Context Pack → Model+Agent → Action → Evidence → 回饋。',
+  sdl:'同一個任務跑三種不同品質的 prompt（含／不含驗收條件），記錄輸出差異'},
+  en:{t:'Four Engineering Dimensions (Map 1, zones 01–02)', s:'The four design dimensions of one agent system',
+  f:'Prompt (what to say this time), Context (what it should see this round), Harness (where it works and what it may touch), Loop (how it iterates to a pass).',
+  sdl:'Run one task through three prompts of differing quality (with and without acceptance conditions) and record the difference'},
+  mats:[
+   {k:'main', zh:'T2 · AGEN — Agent Engineering 系統圖', en:'T2 · AGEN — The Agent Engineering System Map', url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/'},
+   {k:'read', zh:'VC · Vibe Coding 互動指南（ML／DL／GenAI）', en:'VC · Vibe Coding Interactive Guide (ML / DL / GenAI)', url:'https://lolopodcast.github.io/ML-DL-GenAI-Vibe-Coding/'},
+   {k:'read', zh:'Google NotebookLM & AI 工具流（對應 Context Engineering 與 KB）', en:'Google NotebookLM & AI Tool Workflow (Context Engineering and the KB)', url:'https://lolopodcast.github.io/NBLM-Gem-KB/'},
+   {k:'read', zh:'容器化 AI 與進階 Agent 工作流（對應 Harness Engineering）', en:'Containerized AI & Advanced Agent Workflow (Harness Engineering)', url:'https://lolopodcast.github.io/container-ai-workflow/'},
+   {k:'opt', zh:'AICF · AI 素養共同語言平台（建立共同語言，W7 再取用一次）', en:'AICF · AI Literacy Common Language Platform (reused in W7)', url:'https://lolopodcast.github.io/AICF-AI-Competency-Framework/'}
+  ], ws:{c:'W04'} },
+
+{ n:5, block:'arch', zh:{t:'建構流程與安全治理（圖一 03、04 區 ＋ 圖三總覽）', s:'從意圖到一個受治理、可持久的 Agent',
+  f:'九步驟建構流程，以及 Full Safety Gate 四道閘：Source check（外部內容是資料不是指令）／Answer check（讀取 ≠ 傳送）／Action gate（草稿 ≠ 寄送）／Persistence（寫入前審核、金鑰只放後端）。課堂最後 10 分鐘公布 W9 提案格式。',
+  sdl:'Vibe coding 做一個最小 SPA（例如個人 profile 單頁），體驗典範轉移'},
+  en:{t:'Build Process and Safety Governance (Map 1 zones 03–04 + Map 3)', s:'From intent to a governed, persistent agent',
+  f:'A nine-step build process and the Full Safety Gate: source check, answer check, action gate, persistence. The W9 proposal format is released in the last ten minutes.',
+  sdl:'Vibe-code a minimal SPA (e.g. a one-page personal profile) and feel the shift'},
+  mats:[
+   {k:'main', zh:'T3 · IPOB — Vibe Coding AI Agent 系統化三維藍圖', en:'T3 · IPOB — The Three-Dimensional Blueprint for a Vibe-Coded Agent', url:'https://lolopodcast.github.io/Vibe-Coding-Agent-Blueprint/'},
+   {k:'read', zh:'Read–Analyze–Act Safety Gate（與四道閘幾乎一對一）', en:'Read–Analyze–Act Safety Gate (nearly one-to-one with the four gates)', url:'https://lolopodcast.github.io/read-analyze-act-safety-gate/'},
+   {k:'opt', zh:'Agentic AI 與組織轉型（總體視野）', en:'Agentic AI & Organizational Transformation (the wider view)', url:'https://lolopodcast.github.io/Agentic-AI-Org-Transformation/'},
+   {k:'opt', zh:'容器化 AI 與 Agent 工作流 · 主題測驗（課後自我檢核）', en:'Containerized AI & Agent Workflow · Topic Quiz (post-class self-check)', url:'https://lolopodcast.github.io/container-ai-workflow/CONTAINER_AI_WORKFLOW_QUIZ.html'},
+   {k:'yt', zh:'EP34 · AI-EMI Course Vibe Coding Workshop（雙語 10 分鐘，課前）', en:'EP34 · AI-EMI Course Vibe Coding Workshop (bilingual, 10 min, before class)', url:'https://youtu.be/AdyVk8vMbnM'}
+  ], ws:{c:'W05'} },
+
+{ n:6, block:'role', zh:{t:'PM 的角色定位、NPD 流程與跨部門協作', s:'職稱是標籤，不是證據',
+  f:'PM 在跨國企業中的定位、PM／PO／PL／PCC 四種角色、硬體瀑布與軟體敏捷的節奏差異，以及 AI 世代 PM 從「寫規格」轉為「定義意圖、範圍與驗收條件」——這正是 W4 的 Prompt Engineering。',
+  sdl:'讀 PDMA 七大知識領域與 Stage-Gate 六階段，對照自己想去的產業'},
+  en:{t:'The PM Role, NPD and Cross-Functional Work', s:'A job title is a label, not evidence',
+  f:'Where the PM sits in a multinational; PM / PO / PL / PCC; hardware waterfall versus software agile; and the AI-era shift from writing specs to defining intent, scope and acceptance conditions.',
+  sdl:'Read the seven PDMA knowledge areas and the six Stage-Gate stages against your target industry'},
+  mats:[
+   {k:'main', zh:'PMA · HW／SW 產品管理（PM／PO／PL／PCC）', en:'PMA · HW/SW Product Management (PM / PO / PL / PCC)', url:'https://lolopodcast.github.io/PM-PO-PL-PCC/'},
+   {k:'pdf', zh:'PM 產品經理 · PDMA 七大知識領域（含配分）', en:'Product Manager · The Seven PDMA Knowledge Areas (with weights)', url:'https://lolopodcast.github.io/AI-Workshop-Hub/docs/PM-Product-Manager_PDMA-Knowledge-Areas_Coggle_SML_20250317.pdf'},
+   {k:'pdf', zh:'NPD 新產品開發 · 階段關卡模型（六階段與跨部門接力）', en:'NPD · The Stage-Gate Model (six stages and the cross-functional relay)', url:'https://lolopodcast.github.io/AI-Workshop-Hub/docs/NPD_Stage-Gate-Model_Coggle_SML_20240312.pdf'},
+   {k:'opt', zh:'AI-native 產品開發工作坊：以 PM／PjM 身分 Vibe Coding（對象為教師，示範「定義意圖」在真實工作裡的樣子）', en:'AI-Native Product Development Workshop: Vibe Coding as a PM/PjM (faculty-facing; shows what "defining intent" looks like in real work)', url:'https://lolopodcast.github.io/AI-EMI-Course-Vibe-Coding-as-a-PM-PjM/'},
+   {k:'yt', zh:'EP26 · Learning for Competence Building', en:'EP26 · Learning for Competence Building', url:'https://youtu.be/XQk_c0w80FQ'}
+  ], ws:{c:'W06'} },
+
+{ n:7, block:'role', zh:{t:'職能地圖：Competency = f(K, S, A)', s:'把一份 JD 拆成知識、技能與態度',
+  f:'104 的欄位結構就是半套抽取規則；兩軸判定（管理對象 PM／PjM、層級 Specialist→Director 以上）一律不採信職稱、必附原句依據；A（態度）的四象限與不可觀察性批判。',
+  sdl:'實際抓 5 份 JD，用兩軸判定跑一遍，記錄「無法判定」的比例'},
+  en:{t:'The Competency Map: Competency = f(K, S, A)', s:'Take a job description apart into knowledge, skills and attitude',
+  f:'The 104 field structure is already half an extraction rule. Two axes — object of management and seniority — never trust the title and always cite the source sentence.',
+  sdl:'Pull five real job descriptions, run both axes, and record your undecidable rate'},
+  mats:[
+   {k:'main', zh:'T4 · JDKS — 讀懂一份 JD：把職缺文本拆成 K／S／A（同時就是 TP 的分析規格書）', en:'T4 · JDKS — Reading a JD: from posting text to K/S/A (also the TP analysis spec)', url:'https://lolopodcast.github.io/JD-to-KSA/'},
+   {k:'read', zh:'AICF · AI 素養共同語言平台（第二次，這次當 competency 架構讀）', en:'AICF · AI Literacy Common Language Platform (second pass, read as a competency framework)', url:'https://lolopodcast.github.io/AICF-AI-Competency-Framework/'},
+   {k:'opt', zh:'TU · Thinking Upgrader（提問工具箱）', en:'TU · Thinking Upgrader (a questioning toolkit)', url:'https://lolopodcast.github.io/Thinking-Upgrader/'},
+   {k:'opt', zh:'人類智慧 — 多模態外部表徵與適應性認知', en:'Human Intelligence — Multimodal External Representation & Adaptive Cognition', url:'https://lolopodcast.github.io/Human-Intelligence_Adaptive-Cognition/'}
+  ], ws:{c:'W07'} },
+
+{ n:8, block:'role', zh:{t:'職涯策略與有目標的學習', s:'從職能落差反推這學期要學什麼',
+  f:'把 W7 的 K／S／A 落差變成一份可執行的學習計畫，並在此建立 LinkedIn／104 帳號。本週產出直接餵給 W9 提案。',
+  sdl:'建立 LinkedIn 與 104 帳號，完成個人職涯定位初稿'},
+  en:{t:'Career Strategy and Purposeful Learning', s:'Work backwards from the competency gap',
+  f:'Turn the W7 K/S/A gap into an executable learning plan, and set up LinkedIn and 104 accounts. This week feeds straight into the W9 proposal.',
+  sdl:'Create LinkedIn and 104 accounts; draft your career positioning'},
+  mats:[
+   {k:'main', zh:'CSA · 職涯策略架構（為本課量身訂做）', en:'CSA · Career Strategy Architecture (built for this course)', url:'https://lolopodcast.github.io/Career-Strategy-Architecture/'},
+   {k:'read', zh:'5 Pairs of P-Principles for Future Life & Career', en:'5 Pairs of P-Principles for Future Life & Career', url:'https://lolopodcast.github.io/5-Pairs-of-P-Principles-for-Future-Life-Career/'},
+   {k:'opt', zh:'動機轉化系統 v2（「有目標的學習」的操作系統）', en:'Motivation Transformation System v2', url:'https://lolopodcast.github.io/Motivation-Transformation-System/'}
+  ], ws:{c:'W08'} },
+
+{ n:9, block:'tp', mile:'proposal', zh:{t:'期末專案提案（BBB 線上）', s:'晨報 Agent 規格書提案 · 九個必填項',
+  f:'對應圖三的 INPUT／INTENTION 欄，九項：目標與使用者／檢索範圍設定／KB 設計／資料來源與法遵聲明／分析架構（含兩軸判定）／技術棧選擇／執行期架構／團隊分工／里程碑。教師與同儕以書面或錄影回饋。',
+  sdl:'提案前必讀晨報型產品的原型教材，並先看過評分標準'},
+  en:{t:'Term Project Proposal (online)', s:'The morning-brief agent spec — nine required items',
+  f:'Mapped to the INPUT/INTENTION column of Map 3. Feedback from the instructor and peers in writing or on video.',
+  sdl:'Read the prototype material and the evaluation criteria before proposing'},
+  mats:[
+   {k:'main', zh:'AI-Native Product Builder Bootcamp — 商業新聞與分析（晨報型產品原型，提案前必讀）', en:'AI-Native Product Builder Bootcamp — Business News & Analysis (the prototype; required before proposing)', url:'https://lolopodcast.github.io/AI-Native-Product-Builder-Bootcamp_Business-News-and-Analysis/'},
+   {k:'read', zh:'TPE · 期末專案評分工具（提案前先看見評分標準）', en:'TPE · Term Project Evaluation (see the criteria before you propose)', url:'https://lolopodcast.github.io/Term-Project-Evaluation/'}
+  ], ws:null },
+
+{ n:10, block:'build', zh:{t:'圖二第二輪：Project 與持久資產到位', s:'從一次對話升級為有邊界的 Project',
+  f:'建立 repo 與工作資料夾結構、四個 KB 檔、Memory 設計、版本控管。金鑰放 .env 與 repo secrets，絕不進 Git、前端、Prompt、Memory 或 KB。課內 50 分鐘是除錯門診，不是實作課。',
+  sdl:'各組 repo 骨架 + KB 初版（四個 KB 檔可跑）'},
+  en:{t:'Map 2, Second Pass: Project and Persistent Assets', s:'From one conversation to a bounded Project',
+  f:'Repo and folder structure, four KB files, Memory design, version control. Keys live in .env and repo secrets — never in Git, the front end, the prompt, Memory or the KB.',
+  sdl:'A repo skeleton per team plus a first working KB'},
+  mats:[
+   {k:'main', zh:'T1 · AIWE（第二次，這次把第 7 層真的建出來）', en:'T1 · AIWE (second pass — actually build layer 7)', url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/'},
+   {k:'read', zh:'Git & GitHub Essentials for Non-Coders（第二次，這次動手）', en:'Git & GitHub Essentials for Non-Coders (second pass — hands on)', url:'https://lolopodcast.github.io/Git-GitHub-VibeCoding-for-Non-Coders/'},
+   {k:'read', zh:'Google NotebookLM & AI 工具流（第二次，這次建自己的 KB）', en:'Google NotebookLM & AI Tool Workflow (second pass — build your own KB)', url:'https://lolopodcast.github.io/NBLM-Gem-KB/'},
+   {k:'opt', zh:'AI SaaS Bootcamp · LabSPA', en:'AI SaaS Bootcamp · LabSPA', url:'https://lolopodcast.github.io/Bootcamp_AI-SaaS-_-LabSPA/'}
+  ], ws:{c:'W10'} },
+
+{ n:11, block:'build', zh:{t:'圖一與圖三第二輪：Harness 與 Process', s:'來源可設定化、兩軸判定、法遵與工程禮貌',
+  f:'以 104／LinkedIn 為主要目標並設計備援；判定規則寫進 KB/ksa_taxonomy.md，不改程式就能調整關鍵詞；晨報必須顯示「無法判定」比例，超過三成代表詞表要修。robots.txt、速率限制、退避重試、PII 遮蔽、防 Prompt Injection。',
+  sdl:'能跑出一份結構化的 K／S／A 資料 + 初步晨報文案'},
+  en:{t:'Maps 1 and 3, Second Pass: Harness and Process', s:'Configurable sources, two-axis judgement, compliance and engineering courtesy',
+  f:'104 and LinkedIn as primary with fallbacks; rules live in KB/ksa_taxonomy.md so keywords change without touching code; the brief must show its undecidable rate.',
+  sdl:'Produce structured K/S/A data and a first draft of the brief'},
+  mats:[
+   {k:'main', zh:'T2 · AGEN（第二次，這次照 Harness 構面設定真的權限邊界）', en:'T2 · AGEN (second pass — set real permission boundaries)', url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/'},
+   {k:'read', zh:'容器化 AI 與 Agent 工作流（第二次，這次設定沙箱與權限）', en:'Containerized AI & Agent Workflow (second pass — sandbox and permissions)', url:'https://lolopodcast.github.io/container-ai-workflow/'},
+   {k:'read', zh:'Read–Analyze–Act Safety Gate（第二次，這次防真的 injection）', en:'Read–Analyze–Act Safety Gate (second pass — defend against real injection)', url:'https://lolopodcast.github.io/read-analyze-act-safety-gate/'},
+   {k:'opt', zh:'AI-Native Product Builder Bootcamp（第二次，資料串接）', en:'AI-Native Product Builder Bootcamp (second pass — data integration)', url:'https://lolopodcast.github.io/AI-Native-Product-Builder-Bootcamp_Business-News-and-Analysis/'}
+  ], ws:{c:'W11'} },
+
+{ n:12, block:'build', mile:'runnable', zh:{t:'圖三第二輪：Output & Loop，心跳與部署', s:'可運行版上線（里程碑）',
+  f:'Heartbeat 排程（含 UTC 與台北時區換算）與失敗通知、ReAct Loop 的停止條件與成本上限、降級模式、QC Feedback 自動退回重寫、部署與空白畫面排查。',
+  sdl:'可運行版上線 —— 這是 W12 里程碑'},
+  en:{t:'Map 3, Second Pass: Output & Loop, Heartbeat and Deployment', s:'A runnable version goes live (milestone)',
+  f:'Heartbeat scheduling with timezone conversion and failure notification; ReAct loop stop conditions and cost ceilings; the degraded mode; QC feedback; deployment.',
+  sdl:'Ship a runnable version — this is the W12 milestone'},
+  mats:[
+   {k:'main', zh:'T3 · IPOB（第二次，這次只讀 Output & Loop 那一欄與治理層）', en:'T3 · IPOB (second pass — the Output & Loop column and the governance layer)', url:'https://lolopodcast.github.io/Vibe-Coding-Agent-Blueprint/'},
+   {k:'read', zh:'LoLo’s Daily Brief（第二次，這次拆解它的輸出結構當標竿）', en:'LoLo’s Daily Brief (second pass — take its output structure apart)', url:'https://lolopodcast.github.io/daily-brief/'},
+   {k:'read', zh:'AIWF · AI 工作流方法論（第二次，執行環境決策）', en:'AIWF · AI Workflow Methodology (second pass — runtime decisions)', url:'https://lolopodcast.github.io/AI-Workflow-Methodology/'},
+   {k:'opt', zh:'EMI SPA Course Showcase Gallery', en:'EMI SPA Course Showcase Gallery', url:'https://lolopodcast.github.io/SPA-Gallery/'}
+  ], ws:{c:'W12'} },
+
+{ n:13, block:'pjm', zh:{t:'規劃 Planning', s:'從三重限制到關鍵路徑',
+  f:'專案與日常營運的分野、生命週期五階段與三種模型、三重限制、範疇管理五步與範疇蔓延、WBS、甘特圖、關鍵路徑法 CPM、SMART 與規劃七步。',
+  sdl:'把 TP 從本週到 D day 的剩餘工作拆成 WBS，畫出甘特圖與關鍵路徑，標出哪一條路徑一延誤 D day 就守不住'},
+  en:{t:'Planning', s:'From the triple constraint to the critical path',
+  f:'Projects versus operations; five phases and three lifecycle models; the triple constraint; scope management and scope creep; WBS, Gantt and CPM.',
+  sdl:'Break the remaining work down to a WBS, draw the Gantt and the critical path, and mark the path that would cost you D day'},
+  mats:[
+   {k:'main', zh:'T5 · PLAN — 專案規劃：從三重限制到關鍵路徑', en:'T5 · PLAN — Project Planning: from the Triple Constraint to the Critical Path', url:'https://lolopodcast.github.io/Project-Planning-WBS-CPM/'},
+   {k:'pdf', zh:'具高執行績效的專案管理實務（1/2）· 規劃 —— T5 的原始講義', en:'High-Performance Project Management, Part 1 of 2 · Planning — the source deck for T5', url:'https://lolopodcast.github.io/AI-Workshop-Hub/docs/High-Performance-Project-Management_Part1-of-2_EDP_SML_20250318.pdf'},
+   {k:'opt', zh:'PMA · PM／PO／PL／PCC（第二次，這次只回扣 HW 瀑布與 SW 敏捷那兩格）', en:'PMA · PM/PO/PL/PCC (second pass — waterfall and agile only)', url:'https://lolopodcast.github.io/PM-PO-PL-PCC/'},
+   {k:'yt', zh:'EP29 · 六分鐘專案管理導論（課前）', en:'EP29 · Introducing Project Management in Six Minutes (before class)', url:'https://youtu.be/dgB_gsEL9ik'}
+  ], ws:{c:'W13'} },
+
+{ n:14, block:'pjm', zh:{t:'控制 Controlling', s:'風險、變更與方法論',
+  f:'風險的定義（正面與負面影響皆屬風險）、風險管理五步、識別四法、定性與定量評估、應對四策略（規避／轉移／減輕／接受）與觸發條件、變更管理與範疇蔓延、問題解決五步、瀑布 vs 敏捷 vs 混合。',
+  sdl:'建立 TP 風險登記表，至少涵蓋來源網站改版、免費額度用盡、排程失敗未察覺、組員退選、期末衝堂；每一項都要寫出應對方案與觸發條件'},
+  en:{t:'Controlling', s:'Risk, change and methodology',
+  f:'Risk includes upside; the five-step process; four identification methods; qualitative and quantitative assessment; avoid / transfer / mitigate / accept, plus trigger conditions.',
+  sdl:'Build the TP risk register — every entry needs a response and a trigger condition'},
+  mats:[
+   {k:'main', zh:'T6 · CTRL — 專案控制與交付：風險、方法論與事後檢討', en:'T6 · CTRL — Project Control and Delivery: Risk, Method and the Retrospective', url:'https://lolopodcast.github.io/Project-Control-and-Delivery/'},
+   {k:'pdf', zh:'具高執行績效的專案管理實務（2/2）· 控制與交付 —— T6 的原始講義', en:'High-Performance Project Management, Part 2 of 2 · Control and Delivery — the source deck for T6', url:'https://lolopodcast.github.io/AI-Workshop-Hub/docs/High-Performance-Project-Management_Part2-of-2_EDP_SML_20250318.pdf'},
+   {k:'yt', zh:'EP30 · 災害 防-救-建 專案管理（8 分鐘全英，課前）', en:'EP30 · Disaster Prevention, Response and Reconstruction as Project Management (8 min, before class)', url:'https://youtu.be/JQzJYEH1Fs0'},
+   {k:'yt', zh:'EP12 · 18 分鐘介紹 6 小時專案管理實務（選讀，W13-W14 通用）', en:'EP12 · Six Hours of Project Management in Eighteen Minutes (optional, covers W13–W14)', url:'https://youtu.be/l2PBOQaSPk8'}
+  ], ws:{c:'W14'} },
+
+{ n:15, block:'pjm', mile:'dday', zh:{t:'交付 Delivering ★ D day', s:'交付、驗收與事後檢討',
+  f:'交付、驗收、上線與維運交接；績效評估的目的、時機、原則與六項指標；實獲值管理 EVM；專案收尾與事後檢討五步與四項最佳實踐；組織知識管理。AI 世代的 PjM：排程即資源分配、QC Feedback 即品質控制、心跳紀錄即驗收證據、KB 即組織知識管理。',
+  sdl:'D day 作戰 —— 本週上課日即為全班 D day，各組於課堂完成上線並手動驗證一次，教師現場見證'},
+  en:{t:'Delivering ★ D day', s:'Delivery, acceptance and the retrospective',
+  f:'Handover to operations; six performance indicators; earned value management; the five-step retrospective and its four best practices; organizational knowledge management.',
+  sdl:'D day. Every team goes live in class and verifies once by hand, witnessed by the instructor'},
+  mats:[
+   {k:'main', zh:'T6 · CTRL（第二次，這次只讀 M7 交付段）', en:'T6 · CTRL (second pass — module 7, the delivery segment)', url:'https://lolopodcast.github.io/Project-Control-and-Delivery/'},
+   {k:'read', zh:'TPE · 期末專案評分工具（驗收標準）', en:'TPE · Term Project Evaluation (the acceptance criteria)', url:'https://lolopodcast.github.io/Term-Project-Evaluation/'},
+   {k:'opt', zh:'ESA · EMI Speaking Analyzer（W16 簡報自我演練）', en:'ESA · EMI Speaking Analyzer (rehearse for W16)', url:'https://lolopodcast.github.io/EMI-EML-Speaking-Analyzer/'}
+  ], ws:{c:'W15'} },
+
+{ n:16, block:'tp', mile:'pitch', zh:{t:'期末專案簡報競賽（BBB 線上）', s:'D／D+1／D+3 三日成果驗收',
+  f:'原評分構面（創意、可行性、AI 應用程度、簡報表現）維持，新增五項可驗證的驗收：三日成果、心跳確實在跑、可設定性現場 demo、安全治理、出處完整性。',
+  sdl:'成果收錄至 SPA Gallery'},
+  en:{t:'Term Project Pitch Contest (online)', s:'Three days of output: D, D+1 and D+3',
+  f:'The original criteria stand, with five verifiable additions: three days of output, a heartbeat that really runs, live reconfiguration, safety governance and source integrity.',
+  sdl:'Work is archived in the SPA Gallery'},
+  mats:[
+   {k:'main', zh:'TPE · 期末專案評分工具', en:'TPE · Term Project Evaluation', url:'https://lolopodcast.github.io/Term-Project-Evaluation/'},
+   {k:'read', zh:'Business EMI Assessment System (CEFR 2020)', en:'Business EMI Assessment System (CEFR 2020)', url:'https://lolopodcast.github.io/EMI-Rubrics-CEFR2020/'},
+   {k:'opt', zh:'1142 SMMC-EMI TP 網頁競賽（前例觀摩）', en:'1142 SMMC-EMI TP Webpage Competition (previous cohort)', url:'https://ncnulolotas.github.io/1142SMMC-EMI-TPs/'},
+   {k:'opt', zh:'EMI SPA Course Showcase Gallery（成果收錄）', en:'EMI SPA Course Showcase Gallery', url:'https://lolopodcast.github.io/SPA-Gallery/'}
+  ], ws:null },
+
+{ n:17, block:'flex', zh:{t:'彈性教學：TP 成果修改與精進', s:'依 W16 回饋修改；晨報加入選配的績效區塊',
+  f:'依 W16 的回饋修改 TP 成果；晨報可加入選配的「企業／產業績效」區塊，為 W18 的推論鏈鋪路。',
+  sdl:'自主學習，無固定學習單'},
+  en:{t:'Flexible: Revising the Term Project', s:'Act on the W16 feedback; add the optional performance block',
+  f:'Revise against the W16 feedback and optionally add a company/industry performance block to the brief.',
+  sdl:'Self-directed; no fixed worksheet'},
+  mats:[
+   {k:'opt', zh:'募資策略 · EMBA 工作坊（估值邏輯與投資人溝通）', en:'Fundraising Strategy · EMBA Workshop', url:'https://lolopodcast.github.io/venturing-formula/'}
+  ], ws:null },
+
+{ n:18, block:'flex', zh:{t:'彈性教學：證券戶與 ETF 實作', s:'職務 → 產業 → 薪酬 → 經營績效 → ETF',
+  f:'開證券戶與對應銀行帳戶、認識 ETF 成分股。這不是額外的財經課，而是一條推論鏈的終點：要看懂「我想去的公司開的薪水合不合理、撐不撐得久」，本來就必須看懂那家公司與那個產業的經營體質。',
+  sdl:'從自己鎖定的產業／企業出發，找出對應的 ETF 與成分股，觀察與職缺數量、薪酬水準的關聯'},
+  en:{t:'Flexible: Brokerage Accounts and ETFs', s:'Role → industry → pay → business performance → ETF',
+  f:'Open a brokerage account and read ETF constituents. Not a finance elective but the end of one chain of reasoning: to judge whether an offer is sound you must read the company.',
+  sdl:'Start from your target industry, find the matching ETF and its constituents, and look for the link to vacancy counts and pay'},
+  mats:[
+   {k:'opt', zh:'統計假設檢定 —— 商業決策的統計素養', en:'Statistical Hypothesis Testing — A Guide for Business Decisions', url:'https://lolopodcast.github.io/Hypothesis-Testing/'}
+  ], ws:null }
+];
+
+/* ==================== 六份教學型 SPA ==================== */
+const TEACH = [
+  { code:'T1 · AIWE', wk:'W3 · W10', url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/',
+    zh:'AI 工作環境的層級模型', en:'The Layers of an AI Work Environment' },
+  { code:'T2 · AGEN', wk:'W4 · W11', url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/',
+    zh:'Agent Engineering 系統圖', en:'The Agent Engineering System Map' },
+  { code:'T3 · IPOB', wk:'W5 · W12', url:'https://lolopodcast.github.io/Vibe-Coding-Agent-Blueprint/',
+    zh:'Vibe Coding AI Agent 系統化三維藍圖', en:'The Three-Dimensional Agent Blueprint' },
+  { code:'T4 · JDKS', wk:'W7', url:'https://lolopodcast.github.io/JD-to-KSA/',
+    zh:'讀懂一份 JD：把職缺文本拆成 K／S／A', en:'Reading a JD: from posting text to K/S/A' },
+  { code:'T5 · PLAN', wk:'W13', url:'https://lolopodcast.github.io/Project-Planning-WBS-CPM/',
+    zh:'專案規劃：從三重限制到關鍵路徑', en:'Project Planning: Triple Constraint to Critical Path' },
+  { code:'T6 · CTRL', wk:'W14 · W15', url:'https://lolopodcast.github.io/Project-Control-and-Delivery/',
+    zh:'專案控制與交付：風險、方法論與事後檢討', en:'Project Control and Delivery: Risk, Method, Retrospective' }
+];
+
+/* ==================== TP 九項規格 ==================== */
+const TP_SPEC = [
+  { zh:'目標與使用者', en:'Purpose and reader', d_zh:'誰在每天早上看這份晨報？例如：想進半導體業做 PM 的大三生。', d_en:'Who reads this brief every morning? e.g. a third-year student aiming at a PM role in semiconductors.' },
+  { zh:'檢索範圍設定', en:'Search scope', d_zh:'目標產業或企業清單 × 職務關鍵字 × 地區，並說明可增減的機制。職稱關鍵字採廣撒策略，撈回來之後才用工作內容判定，不得在檢索階段就用職稱過濾。', d_en:'Industry or company list × role keywords × region, with a stated mechanism for changing them. Cast the keyword net wide and judge by job content afterwards — never filter by title at retrieval.' },
+  { zh:'KB 設計', en:'KB design', d_zh:'theme_config.md 管呈現、business_rules.md 管規範、sources.md 管來源、ksa_taxonomy.md 管詞表。', d_en:'theme_config.md for presentation, business_rules.md for rules, sources.md for sources, ksa_taxonomy.md for the taxonomy.' },
+  { zh:'資料來源與法遵聲明', en:'Sources and compliance', d_zh:'主要來源、備援來源、robots.txt 與服務條款檢查結果、速率限制設計、PII 遮蔽規則。', d_en:'Primary and fallback sources, robots.txt and terms checks, rate limiting, PII masking.' },
+  { zh:'分析架構', en:'Analysis framework', d_zh:'Competency = f(K, S, A) 對應 JD 的欄位定義與抽取規則。必含兩軸判定：管理對象與層級，兩欄都不採信職稱，且都必須附上判斷依據的引文。層級全收不過濾。', d_en:'Competency = f(K, S, A) mapped to JD fields. Both axes — object of management and seniority — must cite the source sentence and must not trust the title.' },
+  { zh:'技術棧選擇', en:'Technology stack', d_zh:'A 案 GitHub Pages + GitHub Actions；B 案 Netlify 或 Vercel + Serverless Function。', d_en:'Option A: GitHub Pages + Actions. Option B: Netlify or Vercel + a serverless function.' },
+  { zh:'執行期架構', en:'Runtime architecture', d_zh:'免費額度 LLM API 的選擇、額度估算、降級模式設計。', d_en:'Which free-tier LLM API, the quota estimate, and the degraded-mode design.' },
+  { zh:'團隊分工', en:'Team roles', d_zh:'對應圖三的五個角色：管家、教練、Data Fetcher、AI Summarizer、QA & DevOps。', d_en:'The five roles from Map 3: Butler, Coach, Data Fetcher, AI Summarizer, QA & DevOps.' },
+  { zh:'里程碑', en:'Milestones', d_zh:'W12 可運行版上線、D day（最晚 W15 上課日）、W16 正式驗收。', d_en:'W12 runnable version, D day (no later than the W15 class), W16 acceptance.' }
+];
+
+/* ==================== 五個角色 ==================== */
+const TP_ROLES = [
+  { zh:'管家 Butler', en:'Butler', code:'否 / No', zh_d:'維護 Project 骨架、KB 知識庫與版本控管', en_d:'Maintains the project skeleton, the KB and version control', lv:'A + B' },
+  { zh:'教練 Coach', en:'Coach', code:'否 / No', zh_d:'確認商業意圖、把關「這份晨報對讀者有沒有用」', en_d:'Owns the business intent and asks whether the brief is useful to its reader', lv:'A + B' },
+  { zh:'Data Fetcher', en:'Data Fetcher', code:'是 / Yes', zh_d:'抓取多源資料、來源可設定化', en_d:'Fetches from multiple sources and keeps them configurable', lv:'A + B + C' },
+  { zh:'AI Summarizer', en:'AI Summarizer', code:'部分 / Partly', zh_d:'K／S／A 抽取與翻譯、調校 prompt 與 business rules', en_d:'K/S/A extraction and translation; tunes prompts and business rules', lv:'A + B (+C)' },
+  { zh:'QA & DevOps', en:'QA & DevOps', code:'部分 / Partly', zh_d:'品質與版權出處合規檢查、部署與排程託管', en_d:'Quality and attribution checks, deployment and scheduling', lv:'A + B + C' }
+];
+
+/* ==================== 三層能力階梯 ==================== */
+const LADDER = [
+  { lv:'A', zh:'看得懂 Literacy', en:'Literacy', unit_zh:'每位學生必達', unit_en:'Every student',
+    zh_d:'能用九層圖說出自己的工作放在哪一層；能用四種 Engineering 診斷一個失敗的 AI 任務落在哪個構面',
+    en_d:'Can place their own work on the nine layers and diagnose a failed AI task by engineering dimension',
+    v_zh:'學習單 + 課堂 Q&A 冷點名', v_en:'Worksheets and cold calls in class' },
+  { lv:'B', zh:'設定得出來 Configuration', en:'Configuration', unit_zh:'每位學生必達', unit_en:'Every student',
+    zh_d:'會用 vibe coding 產出並修改 KB 與 Skill：任務契約、來源清單、呈現規範、K／S／A 分類規則',
+    en_d:'Can vibe-code and revise the KB and skills: task contracts, source lists, presentation rules, K/S/A classification',
+    v_zh:'個人改一次 KB／Skill 並展示前後輸出差異', v_en:'Change one KB or skill and show the before-and-after output' },
+  { lv:'C', zh:'跑得起來 Construction', en:'Construction', unit_zh:'以組為單位', unit_en:'Per team',
+    zh_d:'會用 vibe coding 一路做到部署、心跳、分析與發佈：repo 結構、排程、API 串接、降級模式、除錯',
+    en_d:'Can vibe-code all the way to deployment, heartbeat, analysis and publication',
+    v_zh:'TP 公開網址 + 執行紀錄', v_en:'A public URL and an execution log' }
+];
+
+/* ==================== 評量 ==================== */
+const GRADE = [
+  { zh:'課堂簡報 Presentation', en:'Presentation', pct:20 },
+  { zh:'期末專案 Term Project', en:'Term Project', pct:30 },
+  { zh:'同儕互評 Peer Review', en:'Peer Review', pct:30 },
+  { zh:'課堂參與 Participation', en:'Participation', pct:20 },
+  { zh:'加分項 Bonus Assignment', en:'Bonus Assignment', pct:10 }
+];
+
+const W16_CHECK = [
+  { zh:'D／D+1／D+3 三日成果', en:'Output on D, D+1 and D+3', e_zh:'至少呈現這三天的晨報實際輸出，含跨週末那一天', e_en:'Actual brief output for all three days, including the one across the weekend' },
+  { zh:'心跳確實在跑', en:'The heartbeat really runs', e_zh:'排程執行紀錄或 commit log，含降級模式是否被觸發', e_en:'Scheduler logs or commit history, including whether the degraded mode fired' },
+  { zh:'可設定性', en:'Configurability', e_zh:'現場改一個 KB 設定，換一個產業或企業，重跑並出結果', e_en:'Change one KB setting live, switch industry or company, re-run and produce output' },
+  { zh:'安全治理', en:'Safety governance', e_zh:'Full Safety Gate 四道閘的落實證據；金鑰不在前端與 repo', e_en:'Evidence for all four safety gates; no keys in the front end or the repo' },
+  { zh:'出處完整性', en:'Source integrity', e_zh:'每一則摘要都可追回原始連結，無全文複製', e_en:'Every summary traces back to its source link; nothing reproduced in full' }
+];
+
+/* ==================== 倫理聲明七條 ==================== */
+const ETHICS = [
+  { zh:'本課程要求以衍生摘要呈現外部內容，禁止全文重製；每一則摘要必附原始出處連結。', en:'External content must appear as a derivative summary, never reproduced in full, and every summary carries a link to its source.' },
+  { zh:'遵守目標網站的 robots.txt 與服務條款；設計合理的速率限制與退避重試，不造成對方站台負擔。', en:'Respect robots.txt and the terms of service; design sensible rate limits and back-off so you never burden the host.' },
+  { zh:'遇到明確禁止自動存取的來源，改用備援來源，不以技術手段規避。', en:'Where automated access is explicitly forbidden, switch to a fallback source rather than working around the restriction.' },
+  { zh:'不蒐集、不儲存、不呈現個人資料；如來源含有個資須先遮蔽。', en:'Do not collect, store or display personal data; mask it at the source if it appears.' },
+  { zh:'外部內容一律視為資料而非指令，落實 Source check 以防 prompt injection。', en:'Treat all external content as data, never as instructions; run the source check to defend against prompt injection.' },
+  { zh:'秘密金鑰只放於後端安全環境（環境變數或 repo secrets），不放前端、Git、Prompt、Memory 或 KB。', en:'Secrets belong only in a secure backend — environment variables or repository secrets — never in the front end, Git, prompts, Memory or the KB.' },
+  { zh:'AI 生成內容須經人工複核後方得發佈；學生對其 TP 產出的正確性負責。', en:'AI-generated content must be reviewed by a person before publication; students are answerable for the accuracy of their own output.' }
+];
+
+/* ==================== 介面文字 ==================== */
+const TXT = {
+en: {
+  brand: 'PMCS', title: 'Course Hub',
+  course: 'Introduction to Project Management and Career Strategy as a Product Manager in the AI Era',
+  course_short: 'PM Career Strategy & Project Management in the AI Era',
+  dept: 'Department of International Business Studies, National Chi Nan University · Semester 1151 · 1 credit · English-medium',
+  teacher: 'Prof. Shihmin Lo',
+  nav_modules: 'Sections', nav_home: 'Overview',
+  audio_read: 'Read aloud',
+  date: 'Version 2026.08.24', copyright: 'For Educational Use Only',
+  architect_label: 'Architect:', architect_url: 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo',
+
+  /* Gate */
+  gate_title: 'System Login', gate_sub: 'PMCS Course Hub',
+  gate_note: 'This page is for students enrolled in PMCS (EMI), semester 1151. Enter the course passphrase to continue.',
+  gate_ph: 'Course passphrase', gate_go: 'Enter', gate_err: 'That passphrase is not correct. Please try again.',
+  gate_remember: 'Once you have entered it on this browser, you will not be asked again.',
+  gate_show: 'Show passphrase', gate_hide: 'Hide passphrase',
+
+  /* Sections */
+  s0: 'Overview', s1: 'Weekly Materials', s2: 'Term Project', s3: 'Assessment', s4: 'Ethics', s5: 'All Resources',
+
+  /* Overview */
+  ov_title: 'Where the course stands today',
+  ov_now: 'This week', ov_next: 'Next class', ov_before: 'Course begins in', ov_after: 'Course complete',
+  ov_dday: 'D day', ov_dday_sub: 'Every team goes live in class',
+  ov_days: 'days', ov_today: 'today', ov_passed: 'passed',
+  ov_mile: 'Milestones and key dates',
+  ov_m_proposal: 'W9 · Proposal', ov_m_runnable: 'W12 · Runnable version', ov_m_dday: 'W15 · D day', ov_m_pitch: 'W16 · Pitch contest',
+  ov_map: 'The shape of the course',
+  ov_quick: 'Go straight to',
+  ov_quick_ws: 'Worksheets', ov_quick_ws_d: 'All twelve, W3 to W15',
+  ov_quick_teach: 'Teaching materials', ov_quick_teach_d: 'The six interactive units',
+  ov_quick_bench: 'The benchmark', ov_quick_bench_d: 'LoLo’s Daily Brief',
+  ov_quick_hub: 'AI Workshop Hub', ov_quick_hub_d: 'The full material library',
+  ov_what: 'What you will have built',
+  ov_what_p: 'A morning brief that updates itself every day, is publicly reachable, and can be switched to another industry — analysing what PM and PjM job postings actually ask for, expressed as knowledge, skills and attitude. Not a proposal document: a URL that opens, a log you can read, and a rerun that works when you change the industry.',
+
+  /* Weekly */
+  wk_title: 'Eighteen weeks, week by week',
+  wk_sub: 'W1–W16 are the formal course. W17–W18 are flexible weeks for self-directed learning.',
+  wk_all: 'All', wk_expand: 'Open', wk_collapse: 'Close',
+  wk_focus: 'In class', wk_sdl: 'Before and after class',
+  wk_mats: 'Materials', wk_ws: 'Worksheet',
+  wk_main: 'Required · first', wk_read: 'Required', wk_opt: 'Optional', wk_yt: 'Video', wk_pdf: 'Lecture deck',
+  wk_none: 'No worksheet this week',
+  wk_open_ws: 'Open worksheet',
+
+  /* TP */
+  tp_title: 'The morning-brief agent',
+  tp_intro: 'The term project is not a proposal document. It is a running system: a brief that updates itself every morning, that anyone can open, and that can be pointed at a different industry by editing a text file.',
+  tp_spec: 'The nine-item specification (W9)',
+  tp_roles: 'Five roles, six people',
+  tp_roles_note: 'A first-year general course will always have a wide technical spread. These roles are designed so that someone who does not code still contributes something real.',
+  tp_role_code: 'Coding needed?', tp_role_duty: 'Responsibility', tp_role_lv: 'Level',
+  tp_ladder: 'Three levels of depth',
+  tp_ladder_note: 'The individual requirement stops at Level B. Level C is a team outcome, led by the technical members while everyone else observes, accepts and quality-checks.',
+  tp_lv_unit: 'Achieved by', tp_lv_verify: 'Verified through',
+  tp_arch: 'Runtime architecture',
+  tp_arch_note: 'Build time uses your own paid subscription. Run time calls a free-tier API — and must degrade gracefully when that quota runs out. Free-tier policy will change at some point; a design that survives the change is the lesson.',
+  tp_arch_1: 'Daily schedule fires',
+  tp_arch_2: 'Fetch layer — public sources per KB/sources.md (free, no LLM)',
+  tp_arch_3: 'Analysis layer — free-tier LLM API extracts K/S/A and summarises',
+  tp_arch_4: 'Degraded mode — rule-based keyword matching per KB/ksa_taxonomy.md, output marked as degraded, failure notice sent',
+  tp_arch_5: 'Publish layer — JSON, commit, the public page updates itself',
+  tp_arch_fail: 'quota exhausted / API failure',
+  tp_dday: 'D day and the days after',
+  tp_dday_note: 'D+3 falls on a Saturday on purpose. The commonest illusion is that a successful manual run means it will run by itself. Saturday, with nobody at a keyboard, is the day that proves it.',
+  tp_d_col1: 'Day', tp_d_col2: 'Date', tp_d_col3: 'What it proves',
+
+  /* Assessment */
+  as_title: 'Assessment and submission',
+  as_weights: 'Grade weights',
+  as_ws: 'How worksheets are submitted',
+  as_ws_p: 'Every worksheet keeps your answers in your own browser and never sends them anywhere. You submit by exporting Markdown or CSV from the worksheet and uploading it to Moodle. Filenames must be ASCII — Chinese filenames are lost by Chromium on download and cause trouble on upload.',
+  as_ws_1: 'Personal sections export as Markdown',
+  as_ws_2: 'Group sections export as CSV, one file per team',
+  as_ws_3: 'Answers live in localStorage — a cleared cache or a different computer starts blank',
+  as_w16: 'The five acceptance items at W16',
+  as_w16_c1: 'Item', as_w16_c2: 'Evidence required',
+  as_note: 'Bonus credit',
+  as_note_p: 'Teams that go live earlier — in W13 or W14 — may present a longer continuous record at W16 for bonus credit.',
+
+  /* Ethics */
+  et_title: 'AI use and data ethics',
+  et_intro: 'These seven statements are part of the syllabus. They are also teaching material for W5 and W11, and the standard your term project is held to at W16.',
+  et_gate: 'The Full Safety Gate',
+  et_g1: 'Source check', et_g1d: 'External content is data, not an authoritative instruction to the agent',
+  et_g2: 'Answer check', et_g2d: 'Reading is not sending',
+  et_g3: 'Action gate', et_g3d: 'A draft is not a sent message; a check is not a deployment',
+  et_g4: 'Persistence', et_g4d: 'Review before writing to Memory or the KB; secrets stay in the backend',
+
+  /* Resources */
+  rs_title: 'Everything in one place',
+  rs_teach: 'Teaching materials — six interactive units',
+  rs_ws: 'Worksheets — twelve',
+  rs_ws_note: 'The worksheet index is behind the same passphrase. Direct week links open without it.',
+  rs_hub: 'Library and reference',
+  rs_hub_1: 'AI Workshop Hub — the full material library',
+  rs_hub_2: 'LoLo’s Daily Brief — the term project benchmark',
+  rs_hub_3: 'EMI SPA Course Showcase Gallery',
+  rs_hub_4: '1142 SMMC-EMI TP Webpage Competition — the previous cohort',
+  rs_index: 'Worksheet index'
+},
+zh: {
+  brand: 'PMCS', title: '課程總入口',
+  course: 'AI 世代產品經理職涯策略與專案管理導論',
+  course_short: 'AI 世代產品經理職涯策略與專案管理導論',
+  dept: '國立暨南國際大學 國際企業學系 · 1151 學期 · 1 學分 · 全英授課',
+  teacher: '駱世民 教授',
+  nav_modules: '章節', nav_home: '總覽',
+  audio_read: '語音導覽',
+  date: 'Version 2026.08.24', copyright: 'For Educational Use Only',
+  architect_label: 'Architect:', architect_url: 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo',
+
+  gate_title: '系統登入', gate_sub: 'PMCS 課程總入口',
+  gate_note: '本頁供 1151 學期 PMCS（全英授課）修課同學使用。請輸入課程通行碼。',
+  gate_ph: '課程通行碼', gate_go: '進入', gate_err: '通行碼不正確，請再試一次。',
+  gate_remember: '在這台瀏覽器輸入過一次之後，下次可直接進入。',
+  gate_show: '顯示通行碼', gate_hide: '隱藏通行碼',
+
+  s0: '總覽', s1: '每週教材', s2: '期末專案', s3: '評量與繳交', s4: '倫理聲明', s5: '資源總表',
+
+  ov_title: '這門課現在走到哪裡',
+  ov_now: '本週', ov_next: '下次上課', ov_before: '距離開學', ov_after: '課程已結束',
+  ov_dday: 'D day', ov_dday_sub: '全班於課堂完成上線',
+  ov_days: '天', ov_today: '就是今天', ov_passed: '已過',
+  ov_mile: '里程碑與關鍵日期',
+  ov_m_proposal: 'W9 · 提案', ov_m_runnable: 'W12 · 可運行版', ov_m_dday: 'W15 · D day', ov_m_pitch: 'W16 · 簡報競賽',
+  ov_map: '課程的形狀',
+  ov_quick: '直接前往',
+  ov_quick_ws: '學習單', ov_quick_ws_d: '十二份，W3 到 W15',
+  ov_quick_teach: '教學型教材', ov_quick_teach_d: '六份互動單元',
+  ov_quick_bench: '標竿示範', ov_quick_bench_d: 'LoLo’s Daily Brief',
+  ov_quick_hub: 'AI Workshop Hub', ov_quick_hub_d: '完整教材庫',
+  ov_what: '這學期結束時，你會做出什麼',
+  ov_what_p: '一個每天早上自動更新、可公開存取、可切換產業的 PM／PjM 職缺 K／S／A 分析晨報。不是一份提案文件，而是一個網址打得開、執行紀錄看得到、換個產業重跑得起來的系統。',
+
+  wk_title: '十八週，逐週對照',
+  wk_sub: 'W1–W16 為正式課程，W17–W18 為彈性教學與自主學習。',
+  wk_all: '全部', wk_expand: '展開', wk_collapse: '收合',
+  wk_focus: '課堂重點', wk_sdl: '課前與課後',
+  wk_mats: '教材', wk_ws: '學習單',
+  wk_main: '必讀 · 第一項', wk_read: '必讀', wk_opt: '選讀', wk_yt: '影音', wk_pdf: '講義',
+  wk_none: '本週無學習單',
+  wk_open_ws: '開啟學習單',
+
+  tp_title: '晨報 Agent',
+  tp_intro: '期末專案不是一份提案文件，而是一個會自己運作的系統：每天早上自己更新、任何人打得開、改一個文字檔就能換一個產業。',
+  tp_spec: '九項規格（W9 提案格式）',
+  tp_roles: '五個角色，六個人',
+  tp_roles_note: '一年級通識課的技術落差是必然的。這套角色設計讓不會寫程式的人也有實質貢獻——這點要在 W2 分組時就講清楚。',
+  tp_role_code: '需要程式能力？', tp_role_duty: '主要職責', tp_role_lv: '對應階梯',
+  tp_ladder: '三層能力階梯',
+  tp_ladder_note: '個人能力要求停在 B，C 是團隊成果，由組內技術角色主責，其他組員參與觀察、驗收與品管。',
+  tp_lv_unit: '達成單位', tp_lv_verify: '驗收方式',
+  tp_arch: '執行期架構',
+  tp_arch_note: '建構期用自己的付費訂閱方案 vibe coding；執行期呼叫免費額度 API，而且必須在額度用盡時仍然交得出東西。免費額度政策遲早會變，設計成壞掉時仍能運作，這件事本身就是教材。',
+  tp_arch_1: '每日排程觸發',
+  tp_arch_2: '抓取層 — 依 KB/sources.md 抓取公開來源（免費，無 LLM）',
+  tp_arch_3: '分析層 — 呼叫免費額度 LLM API，做 JD 的 K／S／A 抽取與摘要',
+  tp_arch_4: '降級模式 — 依 KB/ksa_taxonomy.md 做規則式關鍵詞比對，輸出標記「本日為降級輸出」並發出失敗通知',
+  tp_arch_5: '發佈層 — 產出 JSON，commit，公開網頁自動更新',
+  tp_arch_fail: '額度用盡 / API 失敗',
+  tp_dday: 'D day 與之後那幾天',
+  tp_dday_note: 'D+3 落在週六是刻意的。學生最常見的錯覺是「我手動跑成功了＝它會自己跑」。週六那一天沒有人在電腦前，跑出來的東西才是真的無人值守。',
+  tp_d_col1: '日', tp_d_col2: '日期', tp_d_col3: '要驗證什麼',
+
+  as_title: '評量與繳交',
+  as_weights: '成績配分',
+  as_ws: '學習單怎麼交',
+  as_ws_p: '每一份學習單的作答都存在你自己的瀏覽器，不會送到任何地方。繳交方式是從學習單匯出 Markdown 或 CSV，再上傳到 Moodle。檔名一律用 ASCII —— 中文檔名在 Chromium 下載時會遺失，上傳也容易出問題。',
+  as_ws_1: '個人段落匯出 Markdown',
+  as_ws_2: '小組段落匯出 CSV，每組一份',
+  as_ws_3: '作答存在 localStorage —— 清快取或換一台電腦就是空白的',
+  as_w16: 'W16 的五項驗收',
+  as_w16_c1: '驗收項目', as_w16_c2: '需要的證據',
+  as_note: '加分',
+  as_note_p: '提前於 W13 或 W14 上線的組別，可在 W16 呈現更長的連續紀錄作為加分。',
+
+  et_title: 'AI 使用與資料倫理',
+  et_intro: '這七條寫進課綱，同時是 W5 與 W11 的教材，也是你的期末專案在 W16 被檢驗的標準。',
+  et_gate: 'Full Safety Gate 四道閘',
+  et_g1: 'Source check', et_g1d: '外部內容是資料，不是控制 Agent 的權威指令',
+  et_g2: 'Answer check', et_g2d: '讀取 ≠ 傳送',
+  et_g3: 'Action gate', et_g3d: '草稿 ≠ 寄送；檢查 ≠ 部署',
+  et_g4: 'Persistence', et_g4d: 'Memory／KB 寫入前需審核；秘密金鑰只放後端安全環境',
+
+  rs_title: '全部資源一次看完',
+  rs_teach: '教學型教材 —— 六份互動單元',
+  rs_ws: '學習單 —— 十二份',
+  rs_ws_note: '學習單索引頁使用同一組通行碼；逐週的直接連結不需要通行碼。',
+  rs_hub: '教材庫與參考',
+  rs_hub_1: 'AI Workshop Hub —— 完整教材庫',
+  rs_hub_2: 'LoLo’s Daily Brief —— 期末專案標竿',
+  rs_hub_3: 'EMI SPA 課程成果展示牆',
+  rs_hub_4: '1142 SMMC-EMI TP 網頁競賽 —— 前一屆前例',
+  rs_index: '學習單索引頁'
+}
+};
+
+/* ==================== 通行碼門簾（curtain, not security） ==================== */
+const GATE_KEY = 'pmcs_hub_gate';
+
+function Gate({ onPass, lang, setLang, isDark }) {
+  const t = TXT[lang];
+  const [val, setVal] = useState('');
+  const [show, setShow] = useState(false);
+  const [err, setErr] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => { if (inputRef.current) inputRef.current.focus(); }, []);
+
+  const submit = (e) => {
+    if (e) e.preventDefault();
+    const v = (val || '').trim().toLowerCase();
+    if (v === PASS) {
+      try { localStorage.setItem(GATE_KEY, '1'); } catch (x) {}
+      onPass();
+    } else { setErr(true); }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#004030] dark:bg-[#0b1a16] text-white">
+      <div className="flex-1 flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md animate-fade-in">
+
+          <div className="flex justify-end mb-4">
+            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+              className="px-3 py-1.5 text-xs font-bold border border-[#D8C3A5]/50 rounded-lg hover:bg-white/10 flex items-center gap-1.5">
+              <IconGlobe size={14} />{lang === 'en' ? '中文' : 'EN'}
+            </button>
+          </div>
+
+          <div className="bg-white/5 border border-[#D8C3A5]/30 rounded-2xl p-7 sm:p-9 shadow-2xl backdrop-blur">
+            <div className="flex items-center gap-3 mb-1">
+              <span className="text-[#D8C3A5]"><IconLock size={22} /></span>
+              <h1 className="font-serif font-black text-2xl tracking-wide text-[#D8C3A5]">{t.gate_title}</h1>
+            </div>
+            <p className="font-serif text-sm text-white/70 mb-1">{t.gate_sub}</p>
+            <p className="text-[13px] leading-relaxed text-white/60 mb-6">{t.gate_note}</p>
+
+            <form onSubmit={submit}>
+              <div className="relative">
+                <input ref={inputRef} type={show ? 'text' : 'password'} value={val}
+                  onChange={(e) => { setVal(e.target.value); setErr(false); }}
+                  placeholder={t.gate_ph} autoComplete="off" spellCheck="false"
+                  aria-label={t.gate_ph}
+                  className="w-full bg-white/10 border border-[#D8C3A5]/40 rounded-xl pl-4 pr-12 py-3 text-white placeholder-white/40
+                    focus:outline-none focus:border-[#D8C3A5] focus:ring-2 focus:ring-[#D8C3A5]/30" />
+                <button type="button" onClick={() => setShow(!show)} aria-pressed={show}
+                  aria-label={show ? t.gate_hide : t.gate_show}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-white/60 hover:text-[#D8C3A5] rounded-lg">
+                  {show ? <IconEye size={18} /> : <IconEyeOff size={18} />}
+                </button>
+              </div>
+
+              {err && <p className="mt-3 text-[13px] text-rose-300">{t.gate_err}</p>}
+
+              <button type="submit"
+                className="mt-5 w-full bg-[#D8C3A5] text-[#004030] font-bold py-3 rounded-xl hover:bg-white transition-colors">
+                {t.gate_go}
+              </button>
+            </form>
+
+            <p className="mt-5 text-[12px] leading-relaxed text-white/45">{t.gate_remember}</p>
+          </div>
+
+          <p className="mt-6 text-center text-[11px] text-white/35">
+            {t.architect_label}&nbsp;
+            <a href={t.architect_url} target="_blank" rel="noopener noreferrer"
+              className="text-[#D8C3A5]/80 hover:text-[#D8C3A5] underline">Prof. Shihmin Lo</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==================== 共用小元件 ==================== */
+const MAT_STYLE = {
+  main: { cls: 'bg-[#004030] text-[#D8C3A5] dark:bg-[#D8C3A5] dark:text-[#004030]', Icon: IconBook },
+  read: { cls: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200', Icon: IconBook },
+  opt:  { cls: 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300', Icon: IconBook },
+  yt:   { cls: 'bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-200', Icon: IconVideo },
+  pdf:  { cls: 'bg-amber-100 text-amber-900 dark:bg-amber-900/50 dark:text-amber-200', Icon: IconFile }
+};
+
+const MatRow = ({ m, lang, t }) => {
+  const st = MAT_STYLE[m.k] || MAT_STYLE.opt;
+  const label = { main: t.wk_main, read: t.wk_read, opt: t.wk_opt, yt: t.wk_yt, pdf: t.wk_pdf }[m.k];
+  return (
+    <a href={m.url} target="_blank" rel="noopener noreferrer"
+      className="group flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+      <span className={`shrink-0 mt-0.5 px-2 py-1 rounded-md text-[10px] font-bold tracking-wide whitespace-nowrap ${st.cls}`}>{label}</span>
+      <span className="flex-1 min-w-0 text-[13px] leading-relaxed text-slate-700 dark:text-slate-200 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]">
+        {m[lang]}
+      </span>
+      <span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+    </a>
+  );
+};
+
+const Card = ({ children, className = '' }) => (
+  <div className={`bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>
+);
+
+const H2 = ({ children }) => (
+  <h2 className="font-serif font-black text-2xl sm:text-3xl text-[#004030] dark:text-[#D8C3A5] mb-2">{children}</h2>
+);
+
+/* ==================== 主程式 ==================== */
+function App() {
+  const [unlocked, setUnlocked] = useState(() => {
+    try { return localStorage.getItem(GATE_KEY) === '1'; } catch (e) { return false; }
+  });
+  const [lang, setLang] = useState('en');
+  const [isDark, setIsDark] = useState(true);
+  const [section, setSection] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [ttsState, setTtsState] = useState('idle');
+  const [openWeek, setOpenWeek] = useState(null);
+  const [blockFilter, setBlockFilter] = useState('all');
+  const ttsRun = useRef(0);
+  const menuRef = useRef(null);
+
+  const t = TXT[lang];
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.lang = lang === 'zh' ? 'zh-TW' : 'en';
+  }, [isDark, lang]);
+
+  useEffect(() => {
+    const h = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+
+  useEffect(() => { try { speechSynthesis.cancel(); } catch (e) {} setTtsState('idle'); }, [section, lang]);
+
+  /* ===== 日期計算 ===== */
+  const cal = useMemo(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const list = WEEKS.map(w => ({ ...w, d: weekDate(w.n) }));
+    const dday = weekDate(DDAY_WEEK);
+    const ddayDiff = daysBetween(today, dday);
+    let current = null, next = null;
+    for (const w of list) {
+      const diff = daysBetween(today, w.d);
+      if (diff >= -6 && diff <= 0 && !current) current = w;
+      if (diff > 0 && !next) next = w;
+    }
+    const started = daysBetween(today, list[0].d) <= 0;
+    const ended = daysBetween(today, list[list.length - 1].d) < -6;
+    return { today, list, dday, ddayDiff, current, next, started, ended };
+  }, []);
+
+  const goSection = (id) => { setSection(id); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+  const SECTIONS = [
+    { id: 0, label: t.s0, Icon: IconHome },
+    { id: 1, label: t.s1, Icon: IconCalendar },
+    { id: 2, label: t.s2, Icon: IconTarget },
+    { id: 3, label: t.s3, Icon: IconScale },
+    { id: 4, label: t.s4, Icon: IconShield },
+    { id: 5, label: t.s5, Icon: IconLayers }
+  ];
+
+  /* ===== TTS ===== */
+  const handleTTS = (action) => {
+    if (!('speechSynthesis' in window)) return;
+    if (action === 'stop') { ttsRun.current += 1; speechSynthesis.cancel(); setTtsState('idle'); return; }
+    if (action === 'pause') { speechSynthesis.pause(); setTtsState('paused'); return; }
+    if (action === 'play') {
+      if (ttsState === 'paused') { speechSynthesis.resume(); setTtsState('playing'); return; }
+      speechSynthesis.cancel();
+      const sep = lang === 'zh' ? '。 ' : '. ';
+      let texts = [];
+      if (section === 0) {
+        texts = [t.course, t.ov_title, t.ov_what, t.ov_what_p];
+      } else if (section === 1) {
+        texts = [t.wk_title, t.wk_sub];
+        WEEKS.forEach(w => texts.push(`W${w.n}. ${w[lang].t}. ${w[lang].s}`));
+      } else if (section === 2) {
+        texts = [t.tp_title, t.tp_intro, t.tp_spec];
+        TP_SPEC.forEach((s, i) => texts.push(`${i + 1}. ${s[lang]}. ${lang === 'zh' ? s.d_zh : s.d_en}`));
+        texts.push(t.tp_ladder, t.tp_ladder_note);
+        LADDER.forEach(l => texts.push(`Level ${l.lv}. ${l[lang]}. ${lang === 'zh' ? l.zh_d : l.en_d}`));
+        texts.push(t.tp_dday, t.tp_dday_note);
+      } else if (section === 3) {
+        texts = [t.as_title, t.as_weights];
+        GRADE.forEach(g => texts.push(`${g[lang]} ${g.pct}%`));
+        texts.push(t.as_ws, t.as_ws_p, t.as_w16);
+        W16_CHECK.forEach(c => texts.push(`${c[lang]}. ${lang === 'zh' ? c.e_zh : c.e_en}`));
+      } else if (section === 4) {
+        texts = [t.et_title, t.et_intro];
+        ETHICS.forEach((e, i) => texts.push(`${i + 1}. ${e[lang]}`));
+        texts.push(t.et_gate, `${t.et_g1}. ${t.et_g1d}`, `${t.et_g2}. ${t.et_g2d}`, `${t.et_g3}. ${t.et_g3d}`, `${t.et_g4}. ${t.et_g4d}`);
+      } else {
+        texts = [t.rs_title, t.rs_teach];
+        TEACH.forEach(x => texts.push(`${x.code}. ${x[lang]}`));
+      }
+      texts = texts.filter(Boolean);
+      /* 語音挑選：與課程既有 SPA 完全一致，不做任何更動 */
+      const voices = speechSynthesis.getVoices();
+      let voice = null, code = 'en-GB';
+      if (lang === 'zh') {
+        voice = voices.find(v => v.lang === 'zh-TW' && v.name.includes('Yating')) || voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang.startsWith('zh')) || null;
+        code = 'zh-TW';
+      } else {
+        voice = voices.find(v => v.lang === 'en-GB' && (v.name.includes('Male') || v.name.includes('Daniel'))) || voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.startsWith('en')) || null;
+        code = 'en-GB';
+      }
+
+      /* Chrome 對單一長 utterance 會靜默失敗（網路語音尤其明顯），因此切成短句依序播放 */
+      const CHUNK = lang === 'zh' ? 140 : 190;
+      const full = texts.join(sep);
+      const sentences = (() => {
+        const out = []; let cur = '';
+        for (let i = 0; i < full.length; i++) {
+          cur += full[i];
+          const c = full[i];
+          if ('。！？；!?;'.indexOf(c) >= 0 || (c === '.' && /\s|$/.test(full[i + 1] || ''))) { out.push(cur); cur = ''; }
+        }
+        if (cur.trim()) out.push(cur);
+        return out;
+      })();
+      const packed = []; let acc = '';
+      sentences.forEach(sent0 => {
+        let sent = sent0;
+        while (sent.length > CHUNK) {
+          let cut = sent.lastIndexOf(' ', CHUNK);
+          if (cut < CHUNK * 0.5) cut = CHUNK;
+          if (acc) { packed.push(acc); acc = ''; }
+          packed.push(sent.slice(0, cut));
+          sent = sent.slice(cut);
+        }
+        if ((acc + sent).length > CHUNK) { if (acc) packed.push(acc); acc = sent; }
+        else acc += sent;
+      });
+      if (acc.trim()) packed.push(acc);
+
+      ttsRun.current += 1;
+      const myRun = ttsRun.current;
+      let qi = 0;
+      const speakNext = () => {
+        if (myRun !== ttsRun.current) return;
+        if (qi >= packed.length) { setTtsState('idle'); return; }
+        const u = new SpeechSynthesisUtterance(packed[qi++]);
+        u.rate = 0.95;
+        if (voice) u.voice = voice;
+        u.lang = code;
+        u.onend = speakNext;
+        u.onerror = () => { if (myRun === ttsRun.current) speakNext(); };
+        speechSynthesis.speak(u);
+      };
+      setTtsState('playing');
+      setTimeout(speakNext, 60);
+    }
+  };
+
+  if (!unlocked) {
+    return <Gate onPass={() => setUnlocked(true)} lang={lang} setLang={setLang} isDark={isDark} />;
+  }
+
+  /* ==================== 0 · 總覽 ==================== */
+  const renderOverview = () => {
+    const { current, next, dday, ddayDiff, started, ended } = cal;
+    const milestones = [
+      { k: 'proposal', wk: 9,  label: t.ov_m_proposal },
+      { k: 'runnable', wk: 12, label: t.ov_m_runnable },
+      { k: 'dday',     wk: 15, label: t.ov_m_dday },
+      { k: 'pitch',    wk: 16, label: t.ov_m_pitch }
+    ].map(m => {
+      const d = weekDate(m.wk);
+      const diff = daysBetween(cal.today, d);
+      return { ...m, d, diff, done: diff < 0 };
+    });
+
+    const statusLabel = ended ? t.ov_after : (current ? `${t.ov_now} · W${current.n}` : (started ? t.ov_next : t.ov_before));
+    const statusWeek = current || next || cal.list[0];
+    const statusDiff = statusWeek ? daysBetween(cal.today, statusWeek.d) : null;
+
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">{t.dept}</p>
+          <h1 className="font-serif font-black text-2xl sm:text-4xl leading-tight text-[#004030] dark:text-[#D8C3A5]">{t.course}</h1>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t.teacher}</p>
+        </div>
+
+        {/* 儀表板三格 */}
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Card className="p-5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">{statusLabel}</p>
+            <p className="font-serif font-black text-xl text-[#004030] dark:text-[#D8C3A5] leading-snug">
+              {statusWeek ? `W${statusWeek.n} · ${statusWeek[lang].t}` : '—'}
+            </p>
+            {statusWeek && (
+              <p className="mt-2 text-[13px] text-slate-500 dark:text-slate-400">
+                {fmtFull(statusWeek.d)}
+                {statusDiff > 0 && <span> · {statusDiff} {t.ov_days}</span>}
+                {statusDiff === 0 && <span> · {t.ov_today}</span>}
+              </p>
+            )}
+          </Card>
+
+          <Card className="p-5 sm:col-span-2 bg-[#004030] dark:bg-[#004030] border-[#004030]">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#D8C3A5]/70 mb-2">{t.ov_dday} · W{DDAY_WEEK}</p>
+                <p className="font-serif font-black text-2xl text-[#D8C3A5]">{fmtFull(dday)}</p>
+                <p className="mt-1 text-[13px] text-white/60">{t.ov_dday_sub}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="font-serif font-black text-4xl sm:text-5xl text-white leading-none tabular-nums">
+                  {ddayDiff > 0 ? ddayDiff : (ddayDiff === 0 ? '0' : Math.abs(ddayDiff))}
+                </p>
+                <p className="text-[11px] uppercase tracking-wider text-[#D8C3A5]/70 mt-1">
+                  {ddayDiff > 0 ? t.ov_days : (ddayDiff === 0 ? t.ov_today : `${t.ov_days} · ${t.ov_passed}`)}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* 里程碑 */}
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.ov_mile}</h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {milestones.map(m => (
+              <Card key={m.k} className={`p-4 ${m.done ? 'opacity-55' : ''}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${m.done ? 'bg-slate-400' : 'bg-[#004030] dark:bg-[#D8C3A5]'}`}></span>
+                  <p className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{m.label}</p>
+                </div>
+                <p className="text-[12px] text-slate-500 dark:text-slate-400 pl-4">
+                  {fmtFull(m.d)}
+                  {m.diff > 0 && <span> · {m.diff} {t.ov_days}</span>}
+                  {m.diff === 0 && <span> · {t.ov_today}</span>}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* 課程地圖 */}
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.ov_map}</h3>
+          <div className="space-y-2">
+            {['intro', 'arch', 'role', 'tp', 'build', 'pjm', 'flex'].map(bk => {
+              const ws = WEEKS.filter(w => w.block === bk);
+              const nums = ws.map(w => w.n);
+              const contiguous = nums.every((v, i) => i === 0 || v === nums[i - 1] + 1);
+              const rangeLabel = contiguous
+                ? `W${nums[0]}${nums.length > 1 ? `–W${nums[nums.length - 1]}` : ''}`
+                : nums.map(v => `W${v}`).join(' · ');
+              return (
+                <button key={bk} onClick={() => { setBlockFilter(bk); goSection(1); }}
+                  className="w-full text-left flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
+                    bg-white dark:bg-slate-800/60 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
+                  <span className="font-mono text-[12px] font-bold text-slate-400 shrink-0 w-20">{rangeLabel}</span>
+                  <span className="flex-1 min-w-0 text-[13px] sm:text-sm font-bold text-slate-700 dark:text-slate-200">{BLOCKS[bk][lang]}</span>
+                  <span className="text-slate-400 shrink-0"><IconChevronDown size={16} /></span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 這學期會做出什麼 */}
+        <Card className="p-6 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-2">{t.ov_what}</h3>
+          <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300">{t.ov_what_p}</p>
+        </Card>
+
+        {/* 快速前往 */}
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.ov_quick}</h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { u: WS_BASE, a: t.ov_quick_ws, b: t.ov_quick_ws_d },
+              { u: null, s: 5, a: t.ov_quick_teach, b: t.ov_quick_teach_d },
+              { u: 'https://lolopodcast.github.io/daily-brief/', a: t.ov_quick_bench, b: t.ov_quick_bench_d },
+              { u: HUB, a: t.ov_quick_hub, b: t.ov_quick_hub_d }
+            ].map((q, i) => q.u ? (
+              <a key={i} href={q.u} target="_blank" rel="noopener noreferrer"
+                className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60
+                  hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
+                <p className="flex items-center gap-1.5 text-sm font-bold text-[#004030] dark:text-[#D8C3A5]">{q.a}<IconExternal /></p>
+                <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">{q.b}</p>
+              </a>
+            ) : (
+              <button key={i} onClick={() => goSection(q.s)}
+                className="group text-left p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60
+                  hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
+                <p className="text-sm font-bold text-[#004030] dark:text-[#D8C3A5]">{q.a}</p>
+                <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">{q.b}</p>
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+    );
+  };
+
+  /* ==================== 1 · 每週教材 ==================== */
+  const renderWeekly = () => {
+    const shown = blockFilter === 'all' ? WEEKS : WEEKS.filter(w => w.block === blockFilter);
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div>
+          <H2>{t.wk_title}</H2>
+          <p className="text-[14px] text-slate-500 dark:text-slate-400">{t.wk_sub}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {[['all', t.wk_all]].concat(['intro','arch','role','tp','build','pjm','flex'].map(b => [b, BLOCKS[b][lang]])).map(([k, label]) => (
+            <button key={k} onClick={() => setBlockFilter(k)}
+              className={`px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-colors
+                ${blockFilter === k
+                  ? 'bg-[#004030] text-[#D8C3A5] border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]'
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5]'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          {shown.map(w => {
+            const d = weekDate(w.n);
+            const open = openWeek === w.n;
+            const isD = w.mile === 'dday';
+            return (
+              <Card key={w.n} className={`overflow-hidden ${isD ? 'border-[#004030] dark:border-[#D8C3A5] border-2' : ''}`}>
+                <button onClick={() => setOpenWeek(open ? null : w.n)} aria-expanded={open}
+                  className="w-full text-left px-4 sm:px-5 py-4 flex items-start gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                  <div className="shrink-0 w-14 sm:w-16">
+                    <p className="font-serif font-black text-lg text-[#004030] dark:text-[#D8C3A5] leading-none">W{w.n}</p>
+                    <p className="mt-1 text-[11px] text-slate-400 tabular-nums">{fmtDate(d)}</p>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[14px] sm:text-[15px] text-slate-800 dark:text-slate-100 leading-snug">{w[lang].t}</p>
+                    <p className="mt-0.5 text-[12px] sm:text-[13px] text-slate-500 dark:text-slate-400 leading-snug">{w[lang].s}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-[10px] font-bold text-slate-500 dark:text-slate-300">
+                        {BLOCKS[w.block][lang]}
+                      </span>
+                      {w.ws && <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/50 text-[10px] font-bold text-emerald-800 dark:text-emerald-200">{t.wk_ws} {w.ws.c}</span>}
+                      {w.mile && <span className="px-2 py-0.5 rounded-md bg-[#004030] dark:bg-[#D8C3A5] text-[10px] font-bold text-[#D8C3A5] dark:text-[#004030]">★ {t['ov_m_' + w.mile]}</span>}
+                    </div>
+                  </div>
+                  <span className={`shrink-0 mt-1 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}><IconChevronDown /></span>
+                </button>
+
+                {open && (
+                  <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-slate-100 dark:border-slate-700 space-y-4">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{t.wk_focus}</p>
+                      <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{w[lang].f}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{t.wk_sdl}</p>
+                      <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{w[lang].sdl}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">{t.wk_mats}</p>
+                      <div className="-mx-3">{w.mats.map((m, i) => <MatRow key={i} m={m} lang={lang} t={t} />)}</div>
+                    </div>
+                    {w.ws ? (
+                      <a href={`${WS_BASE}${w.ws.c}/`} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#004030] text-[#D8C3A5] dark:bg-[#D8C3A5] dark:text-[#004030] text-[13px] font-bold hover:opacity-90">
+                        {t.wk_open_ws} · {w.ws.c}<IconExternal />
+                      </a>
+                    ) : (
+                      <p className="text-[12px] text-slate-400 italic">{t.wk_none}</p>
+                    )}
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  /* ==================== 2 · 期末專案 ==================== */
+  const renderTP = () => {
+    const dday = weekDate(DDAY_WEEK);
+    const dayRow = (off, label, why) => {
+      const d = new Date(dday); d.setDate(d.getDate() + off);
+      return { label, date: fmtFull(d), why };
+    };
+    const days = [
+      dayRow(0, 'D',   lang === 'zh' ? 'W15 課堂現場上線與第一次心跳驗證' : 'Going live in the W15 class and verifying the first heartbeat'),
+      dayRow(1, 'D+1', lang === 'zh' ? '驗證隔日排程自動觸發' : 'The next day’s schedule fires by itself'),
+      dayRow(2, 'D+2', lang === 'zh' ? '不要求呈現，但應有紀錄' : 'Not required in the presentation, but a record should exist'),
+      dayRow(3, 'D+3', lang === 'zh' ? '跨週末 —— 驗證排程在假日仍然會跑' : 'Across the weekend — it still runs when nobody is there'),
+      dayRow(7, 'D+7', lang === 'zh' ? 'W16 簡報競賽' : 'The W16 pitch contest')
+    ];
+    return (
+      <div className="space-y-8 animate-fade-in">
+        <div>
+          <H2>{t.tp_title}</H2>
+          <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl">{t.tp_intro}</p>
+        </div>
+
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.tp_spec}</h3>
+          <div className="space-y-2">
+            {TP_SPEC.map((s, i) => (
+              <Card key={i} className="p-4 flex gap-4">
+                <span className="shrink-0 font-serif font-black text-lg text-slate-300 dark:text-slate-600 tabular-nums w-6">{i + 1}</span>
+                <div className="min-w-0">
+                  <p className="font-bold text-[14px] text-slate-800 dark:text-slate-100">{s[lang]}</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? s.d_zh : s.d_en}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_roles}</h3>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_roles_note}</p>
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full min-w-[560px] text-[13px] border-collapse">
+              <thead>
+                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                  <th className="py-2 pr-3 font-bold">{lang === 'zh' ? '角色' : 'Role'}</th>
+                  <th className="py-2 px-3 font-bold whitespace-nowrap">{t.tp_role_code}</th>
+                  <th className="py-2 px-3 font-bold">{t.tp_role_duty}</th>
+                  <th className="py-2 pl-3 font-bold whitespace-nowrap">{t.tp_role_lv}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TP_ROLES.map((r, i) => (
+                  <tr key={i} className="border-b border-slate-100 dark:border-slate-800">
+                    <td className="py-3 pr-3 font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap">{r[lang]}</td>
+                    <td className="py-3 px-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">{r.code}</td>
+                    <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{lang === 'zh' ? r.zh_d : r.en_d}</td>
+                    <td className="py-3 pl-3 font-mono text-[12px] text-slate-500 dark:text-slate-400 whitespace-nowrap">{r.lv}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_ladder}</h3>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_ladder_note}</p>
+          <div className="grid gap-3 md:grid-cols-3">
+            {LADDER.map(l => (
+              <Card key={l.lv} className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-8 h-8 rounded-lg bg-[#004030] dark:bg-[#D8C3A5] text-[#D8C3A5] dark:text-[#004030] font-serif font-black flex items-center justify-center shrink-0">{l.lv}</span>
+                  <p className="font-bold text-[14px] text-slate-800 dark:text-slate-100">{l[lang]}</p>
+                </div>
+                <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? l.zh_d : l.en_d}</p>
+                <dl className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 space-y-1.5 text-[12px]">
+                  <div className="flex gap-2"><dt className="text-slate-400 shrink-0 w-16">{t.tp_lv_unit}</dt><dd className="text-slate-600 dark:text-slate-300 font-bold">{lang === 'zh' ? l.unit_zh : l.unit_en}</dd></div>
+                  <div className="flex gap-2"><dt className="text-slate-400 shrink-0 w-16">{t.tp_lv_verify}</dt><dd className="text-slate-600 dark:text-slate-300">{lang === 'zh' ? l.v_zh : l.v_en}</dd></div>
+                </dl>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_arch}</h3>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_arch_note}</p>
+          <Card className="p-5">
+            <ol className="space-y-0">
+              {[t.tp_arch_1, t.tp_arch_2, t.tp_arch_3].map((s, i) => (
+                <li key={i} className="flex gap-3 pb-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-[11px] font-bold flex items-center justify-center text-slate-600 dark:text-slate-300">{i + 1}</span>
+                  <span className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">{s}</span>
+                </li>
+              ))}
+              <li className="flex gap-3 pb-3 ml-9 pl-3 border-l-2 border-rose-300 dark:border-rose-700">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-rose-500 dark:text-rose-400 mb-1">✗ {t.tp_arch_fail}</p>
+                  <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">{t.tp_arch_4}</p>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-[#004030] dark:bg-[#D8C3A5] text-[#D8C3A5] dark:text-[#004030] text-[11px] font-bold flex items-center justify-center">4</span>
+                <span className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">{t.tp_arch_5}</span>
+              </li>
+            </ol>
+          </Card>
+        </section>
+
+        <section>
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_dday}</h3>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_dday_note}</p>
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full min-w-[480px] text-[13px] border-collapse">
+              <thead>
+                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                  <th className="py-2 pr-3 font-bold">{t.tp_d_col1}</th>
+                  <th className="py-2 px-3 font-bold whitespace-nowrap">{t.tp_d_col2}</th>
+                  <th className="py-2 pl-3 font-bold">{t.tp_d_col3}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {days.map((r, i) => (
+                  <tr key={i} className={`border-b border-slate-100 dark:border-slate-800 ${r.label === 'D+3' ? 'bg-[#004030]/5 dark:bg-[#D8C3A5]/10' : ''}`}>
+                    <td className="py-3 pr-3 font-mono font-bold text-[#004030] dark:text-[#D8C3A5] whitespace-nowrap">{r.label}</td>
+                    <td className="py-3 px-3 text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">{r.date}</td>
+                    <td className="py-3 pl-3 text-slate-600 dark:text-slate-300">{r.why}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    );
+  };
+
+  /* ==================== 3 · 評量與繳交 ==================== */
+  const renderAssessment = () => (
+    <div className="space-y-8 animate-fade-in">
+      <H2>{t.as_title}</H2>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.as_weights}</h3>
+        <div className="space-y-2.5">
+          {GRADE.map((g, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <span className="w-40 sm:w-56 shrink-0 text-[13px] font-bold text-slate-700 dark:text-slate-200">{g[lang]}</span>
+              <div className="flex-1 h-3 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+                <div className="h-full rounded-full bg-[#004030] dark:bg-[#D8C3A5]" style={{ width: `${g.pct * 3}%` }}></div>
+              </div>
+              <span className="w-12 shrink-0 text-right text-[13px] font-bold tabular-nums text-slate-600 dark:text-slate-300">{g.pct}%</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-2">{t.as_ws}</h3>
+        <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl mb-3">{t.as_ws_p}</p>
+        <ul className="space-y-2">
+          {[t.as_ws_1, t.as_ws_2, t.as_ws_3].map((x, i) => (
+            <li key={i} className="flex gap-3 text-[13px] text-slate-600 dark:text-slate-300">
+              <span className="text-[#004030] dark:text-[#D8C3A5] shrink-0">—</span><span>{x}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.as_w16}</h3>
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full min-w-[520px] text-[13px] border-collapse">
+            <thead>
+              <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                <th className="py-2 pr-3 font-bold whitespace-nowrap">{t.as_w16_c1}</th>
+                <th className="py-2 pl-3 font-bold">{t.as_w16_c2}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {W16_CHECK.map((c, i) => (
+                <tr key={i} className="border-b border-slate-100 dark:border-slate-800">
+                  <td className="py-3 pr-3 font-bold text-slate-800 dark:text-slate-100 align-top">{c[lang]}</td>
+                  <td className="py-3 pl-3 text-slate-600 dark:text-slate-300">{lang === 'zh' ? c.e_zh : c.e_en}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{t.as_note}</p>
+        <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.as_note_p}</p>
+      </Card>
+    </div>
+  );
+
+  /* ==================== 4 · 倫理聲明 ==================== */
+  const renderEthics = () => (
+    <div className="space-y-8 animate-fade-in">
+      <div>
+        <H2>{t.et_title}</H2>
+        <p className="text-[14px] leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl">{t.et_intro}</p>
+      </div>
+
+      <ol className="space-y-2">
+        {ETHICS.map((e, i) => (
+          <Card key={i} className="p-4 flex gap-4">
+            <span className="shrink-0 font-serif font-black text-lg text-slate-300 dark:text-slate-600 tabular-nums w-6">{i + 1}</span>
+            <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">{e[lang]}</p>
+          </Card>
+        ))}
+      </ol>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.et_gate}</h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[[t.et_g1, t.et_g1d], [t.et_g2, t.et_g2d], [t.et_g3, t.et_g3d], [t.et_g4, t.et_g4d]].map(([a, b], i) => (
+            <Card key={i} className="p-4">
+              <p className="flex items-center gap-2 font-bold text-[14px] text-[#004030] dark:text-[#D8C3A5]">
+                <span className="shrink-0"><IconShield size={16} /></span>{a}
+              </p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{b}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+
+  /* ==================== 5 · 資源總表 ==================== */
+  const renderResources = () => (
+    <div className="space-y-8 animate-fade-in">
+      <H2>{t.rs_title}</H2>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.rs_teach}</h3>
+        <div className="grid gap-3 md:grid-cols-2">
+          {TEACH.map(x => (
+            <a key={x.code} href={x.url} target="_blank" rel="noopener noreferrer"
+              className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60
+                hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-mono text-[12px] font-bold text-[#004030] dark:text-[#D8C3A5]">{x.code}</p>
+                <span className="text-[11px] font-bold text-slate-400">{x.wk}</span>
+              </div>
+              <p className="mt-1.5 flex items-start gap-1.5 text-[13px] font-bold text-slate-800 dark:text-slate-100 leading-snug">
+                {x[lang]}<span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.rs_ws}</h3>
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3">{t.rs_ws_note}</p>
+        <div className="flex flex-wrap gap-2">
+          <a href={WS_BASE} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#004030] text-[#D8C3A5] dark:bg-[#D8C3A5] dark:text-[#004030] text-[12px] font-bold hover:opacity-90">
+            {t.rs_index}<IconExternal />
+          </a>
+          {WEEKS.filter(w => w.ws).map(w => (
+            <a key={w.n} href={`${WS_BASE}${w.ws.c}/`} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700
+                bg-white dark:bg-slate-800 text-[12px] font-bold text-slate-600 dark:text-slate-300
+                hover:border-[#004030] dark:hover:border-[#D8C3A5] hover:text-[#004030] dark:hover:text-[#D8C3A5]">
+              {w.ws.c}<IconExternal size={12} />
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-3">{t.rs_hub}</h3>
+        <div className="space-y-2">
+          {[
+            { a: t.rs_hub_1, u: HUB },
+            { a: t.rs_hub_2, u: 'https://lolopodcast.github.io/daily-brief/' },
+            { a: t.rs_hub_3, u: 'https://lolopodcast.github.io/SPA-Gallery/' },
+            { a: t.rs_hub_4, u: 'https://ncnulolotas.github.io/1142SMMC-EMI-TPs/' }
+          ].map((x, i) => (
+            <a key={i} href={x.u} target="_blank" rel="noopener noreferrer"
+              className="group flex items-center gap-2 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
+                bg-white dark:bg-slate-800/60 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
+              <span className="flex-1 min-w-0 text-[13px] font-bold text-slate-700 dark:text-slate-200
+                group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]">{x.a}</span>
+              <span className="shrink-0 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+
+  const renderBody = () => {
+    if (section === 0) return renderOverview();
+    if (section === 1) return renderWeekly();
+    if (section === 2) return renderTP();
+    if (section === 3) return renderAssessment();
+    if (section === 4) return renderEthics();
+    return renderResources();
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col pt-16 overflow-x-clip">
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 right-0 h-16 bg-[#004030] dark:bg-slate-900 text-white z-50 shadow-lg border-b border-[#D8C3A5]/30">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative" ref={menuRef}>
+              <button onClick={() => setMenuOpen(!menuOpen)} aria-label={t.nav_modules} aria-expanded={menuOpen}
+                className="p-2 hover:bg-white/10 rounded-lg">{menuOpen ? <IconX /> : <IconMenu />}</button>
+              {menuOpen && (
+                <div className="absolute top-full left-0 mt-1 w-64 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-5rem)] overflow-y-auto
+                  bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 z-[100] py-2">
+                  {SECTIONS.map(s => (
+                    <button key={s.id} onClick={() => goSection(s.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-all
+                        ${section === s.id ? 'bg-[#004030]/10 dark:bg-[#D8C3A5]/15 text-[#004030] dark:text-[#D8C3A5] font-bold'
+                          : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+                      <span className="shrink-0"><s.Icon size={16} /></span>
+                      <span className="truncate">{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button onClick={() => { setSection(0); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              aria-label={t.nav_home} className="p-2 hover:bg-white/10 rounded-lg"><IconHome size={18} /></button>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2 min-w-0">
+              <span className="font-serif font-black text-[#D8C3A5] text-lg tracking-widest shrink-0">{t.brand}</span>
+              <span className="hidden sm:inline font-serif font-bold text-sm md:text-base truncate">{t.title}</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <button onClick={() => handleTTS(ttsState === 'playing' ? 'pause' : 'play')} aria-label={t.audio_read}
+              className="p-2 hover:bg-white/10 rounded-lg">{ttsState === 'playing' ? <IconPause /> : <IconPlay />}</button>
+            <button onClick={() => handleTTS('stop')} aria-label="Stop" className="p-2 hover:bg-white/10 rounded-lg"><IconSquare /></button>
+            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+              className="px-2 sm:px-3 py-1.5 text-xs font-bold border border-[#D8C3A5]/50 rounded-lg hover:bg-white/10">
+              {lang === 'en' ? '中文' : 'EN'}
+            </button>
+            <button onClick={() => setIsDark(!isDark)} aria-label="Theme" className="p-2 hover:bg-white/10 rounded-lg">
+              {isDark ? <IconSun /> : <IconMoon />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* BODY */}
+      <div className="flex-1 w-full max-w-7xl mx-auto flex">
+        <aside className="hidden md:block w-56 shrink-0 border-r border-slate-200 dark:border-slate-700 py-8 px-3">
+          <div className="sticky top-24 space-y-1">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2">{t.nav_modules}</p>
+            {SECTIONS.map(s => (
+              <button key={s.id} onClick={() => goSection(s.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-all
+                  ${section === s.id ? 'bg-[#004030] dark:bg-[#D8C3A5] text-white dark:text-[#004030] font-bold'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                <span className="shrink-0"><s.Icon size={16} /></span>
+                <span className="truncate text-[13px]">{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </aside>
+        <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-8">{renderBody()}</main>
+      </div>
+
+      {/* FOOTER */}
+      <footer className="h-8 bg-[#004030] flex items-center justify-between px-4 shrink-0">
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs truncate">{t.date} · {t.copyright}</span>
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs flex items-center gap-3 shrink-0">
+          <span className="hidden sm:inline">{t.architect_label}&nbsp;
+            <a href={t.architect_url} target="_blank" rel="noopener noreferrer" className="text-[#D8C3A5] hover:text-white underline">Prof. Shihmin Lo</a>
+          </span>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-[#D8C3A5] hover:text-white font-bold">Top ↑</button>
+        </span>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
