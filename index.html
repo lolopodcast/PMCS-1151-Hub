@@ -840,6 +840,23 @@ function App() {
   const [blockFilter, setBlockFilter] = useState('all');
   const ttsRun = useRef(0);
   const menuRef = useRef(null);
+  const ttsUtter = useRef(null);      /* 保留參照，避免 utterance 被 GC 後 onend 永遠不觸發 */
+  const ttsKeep = useRef(null);       /* Chrome 15 秒靜默的保活計時器 */
+  const ttsWatch = useRef(null);      /* 看門狗：引擎卡住時把按鈕還原成播放 */
+
+  const ttsClearTimers = () => {
+    if (ttsKeep.current) { clearInterval(ttsKeep.current); ttsKeep.current = null; }
+    if (ttsWatch.current) { clearInterval(ttsWatch.current); ttsWatch.current = null; }
+  };
+  /* 一定要先 resume 再 cancel：在 paused 狀態下 cancel，Chrome 的語音引擎會一直停在暫停，
+     之後所有 speak() 都只會排進佇列卻永遠不發聲。 */
+  const ttsHardReset = () => {
+    try { speechSynthesis.resume(); } catch (e) {}
+    try { speechSynthesis.cancel(); } catch (e) {}
+    ttsClearTimers();
+    ttsUtter.current = null;
+  };
+  useEffect(() => () => ttsClearTimers(), []);
 
   const t = TXT[lang];
 
@@ -854,7 +871,7 @@ function App() {
     return () => document.removeEventListener('mousedown', h);
   }, []);
 
-  useEffect(() => { try { speechSynthesis.cancel(); } catch (e) {} setTtsState('idle'); setTtsWeek(null); }, [section, lang]);
+  useEffect(() => { ttsRun.current += 1; ttsHardReset(); setTtsState('idle'); setTtsWeek(null); }, [section, lang]);
 
   /* ===== 朗讀中的區塊：主題列自動捲到水平置中 ===== */
   const chipBoxRef = useRef(null);
@@ -888,7 +905,7 @@ function App() {
     if (ttsState === 'idle') { filterAtPlay.current = blockFilter; return; }
     if (filterAtPlay.current !== blockFilter) {
       ttsRun.current += 1;
-      try { speechSynthesis.cancel(); } catch (e) {}
+      ttsHardReset();
       setTtsState('idle'); setTtsWeek(null);
       filterAtPlay.current = blockFilter;
     }
@@ -925,11 +942,20 @@ function App() {
   /* ===== TTS ===== */
   const handleTTS = (action) => {
     if (!('speechSynthesis' in window)) return;
-    if (action === 'stop') { ttsRun.current += 1; speechSynthesis.cancel(); setTtsState('idle'); setTtsWeek(null); return; }
-    if (action === 'pause') { speechSynthesis.pause(); setTtsState('paused'); return; }
+    if (action === 'stop') { ttsRun.current += 1; ttsHardReset(); setTtsState('idle'); setTtsWeek(null); return; }
+    if (action === 'pause') {
+      /* 引擎其實沒在講（已唸完或卡住）→ 不要送出 pause，直接還原成可播放 */
+      if (!speechSynthesis.speaking && !speechSynthesis.pending) {
+        ttsRun.current += 1; ttsHardReset(); setTtsState('idle'); setTtsWeek(null); return;
+      }
+      speechSynthesis.pause(); setTtsState('paused'); return;
+    }
     if (action === 'play') {
-      if (ttsState === 'paused') { speechSynthesis.resume(); setTtsState('playing'); return; }
-      speechSynthesis.cancel();
+      if (ttsState === 'paused' && (speechSynthesis.paused || speechSynthesis.speaking)) {
+        speechSynthesis.resume(); setTtsState('playing'); return;
+      }
+      ttsRun.current += 1;
+      ttsHardReset();
       const sep = lang === 'zh' ? '。 ' : '. ';
       /* items：每一段文字可帶一個 wk 標記，讓畫面知道正在唸哪一週 */
       let items = [];
@@ -1017,20 +1043,45 @@ function App() {
       ttsRun.current += 1;
       const myRun = ttsRun.current;
       let qi = 0;
+      let idleTicks = 0, everStarted = false;
+      const finish = () => { ttsClearTimers(); ttsUtter.current = null; setTtsState('idle'); setTtsWeek(null); };
       const speakNext = () => {
         if (myRun !== ttsRun.current) return;
-        if (qi >= queue.length) { setTtsState('idle'); setTtsWeek(null); return; }
+        if (qi >= queue.length) { finish(); return; }
         const item = queue[qi++];
         setTtsWeek(item.wk);
         const u = new SpeechSynthesisUtterance(item.c);
         u.rate = 0.95;
         if (voice) u.voice = voice;
         u.lang = code;
+        u.onstart = () => { everStarted = true; idleTicks = 0; };
         u.onend = speakNext;
         u.onerror = () => { if (myRun === ttsRun.current) speakNext(); };
+        ttsUtter.current = u;          /* 保留參照，避免被 GC */
+        try { speechSynthesis.resume(); } catch (e) {}
         speechSynthesis.speak(u);
       };
       setTtsState('playing');
+
+      /* Chrome 約 15 秒後會靜默停住且不觸發 onend，週期性 pause/resume 可維持運作 */
+      ttsClearTimers();
+      ttsKeep.current = setInterval(() => {
+        if (myRun !== ttsRun.current) return;
+        if (!speechSynthesis.speaking || speechSynthesis.paused) return;   /* 使用者按了暫停就別動它 */
+        try { speechSynthesis.pause(); speechSynthesis.resume(); } catch (e) {}
+      }, 8000);
+
+      /* 看門狗：連續三次（約 2.4 秒）引擎既沒在講也沒在等，就視為已結束或卡住，把按鈕還原。
+         門檻拉到 2.4 秒是為了容忍網路語音的起始延遲；utterance 一旦真的開始講就會歸零。 */
+      ttsWatch.current = setInterval(() => {
+        if (myRun !== ttsRun.current) { ttsClearTimers(); return; }
+        if (speechSynthesis.speaking || speechSynthesis.pending || speechSynthesis.paused) { idleTicks = 0; return; }
+        idleTicks += 1;
+        /* 只有在確定引擎會回報 onstart 時才用 2.4 秒的快速判定；
+           若這個瀏覽器從沒回報過 onstart，就退回 24 秒的保守停滯判定，免得誤砍正常朗讀。 */
+        if (idleTicks >= (everStarted ? 3 : 30)) { ttsRun.current += 1; finish(); }
+      }, 800);
+
       setTimeout(speakNext, 60);
     }
   };
