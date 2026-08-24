@@ -199,10 +199,10 @@ const WEEKS = [
    {k:'read', zh:'EMI-AI 自我介紹練習（支援 1 分鐘自介影片）', en:'EMI-AI Personal Introduction Practice', url:'https://lolopodcast.github.io/EMI-AI-Self-Introduction/'}
   ], ws:null },
 
-{ n:3, block:'arch', zh:{t:'AI 工作環境的層級模型（圖二）', s:'我的工作到底放在哪裡？',
+{ n:3, block:'arch', zh:{t:'AI 工作環境的層級模型（圖一）', s:'我的工作到底放在哪裡？',
   f:'九層模型：裝置／使用者／AI 平台／帳號方案 Workspace／工作介面／工作模式／工作容器／任務／Context Window。先把地基講清楚，後面所有操作才站得住。',
   sdl:'建立一個 AI Project、在自己電腦建立專用工作資料夾、實測 context window 被壓縮後會發生什麼'},
-  en:{t:'The Layers of an AI Work Environment (Map 2)', s:'Where does your work actually live?',
+  en:{t:'The Layers of an AI Work Environment (Map 1)', s:'Where does your work actually live?',
   f:'Nine layers: device, user, AI platform, account/plan/workspace, interface, mode, container, task, context window. Get the ground right and everything above it holds.',
   sdl:'Create an AI Project, create a dedicated working folder on your own machine, and observe what a compressed context window does'},
   mats:[
@@ -212,10 +212,10 @@ const WEEKS = [
    {k:'opt', zh:'AI Ecosystem Comparison（第 3 層，W2 已看過，此處回扣）', en:'AI Ecosystem Comparison (layer 3, revisited from W2)', url:'https://lolopodcast.github.io/AI-Ecosystem-Comparison/'}
   ], ws:{c:'W03'} },
 
-{ n:4, block:'arch', zh:{t:'四種 Engineering（圖一 01、02 區）', s:'一套 Agent 系統的四個設計構面',
+{ n:4, block:'arch', zh:{t:'四種 Engineering（圖二 01、02 區）', s:'一套 Agent 系統的四個設計構面',
   f:'Prompt（這一次要怎麼說）／Context（這一輪應看見什麼）／Harness（在哪裡做、能做什麼）／Loop（如何反覆做到通過）。搭配運作架構：Project → 持久資產 → Context Pack → Model+Agent → Action → Evidence → 回饋。',
   sdl:'同一個任務跑三種不同品質的 prompt（含／不含驗收條件），記錄輸出差異'},
-  en:{t:'Four Engineering Dimensions (Map 1, zones 01–02)', s:'The four design dimensions of one agent system',
+  en:{t:'Four Engineering Dimensions (Map 2, zones 01–02)', s:'The four design dimensions of one agent system',
   f:'Prompt (what to say this time), Context (what it should see this round), Harness (where it works and what it may touch), Loop (how it iterates to a pass).',
   sdl:'Run one task through three prompts of differing quality (with and without acceptance conditions) and record the difference'},
   mats:[
@@ -226,10 +226,10 @@ const WEEKS = [
    {k:'opt', zh:'AICF · AI 素養共同語言平台（建立共同語言，W7 再取用一次）', en:'AICF · AI Literacy Common Language Platform (reused in W7)', url:'https://lolopodcast.github.io/AICF-AI-Competency-Framework/'}
   ], ws:{c:'W04'} },
 
-{ n:5, block:'arch', zh:{t:'建構流程與安全治理（圖一 03、04 區 ＋ 圖三總覽）', s:'從意圖到一個受治理、可持久的 Agent',
+{ n:5, block:'arch', zh:{t:'建構流程與安全治理（圖二 03、04 區 ＋ 圖三總覽）', s:'從意圖到一個受治理、可持久的 Agent',
   f:'九步驟建構流程，以及 Full Safety Gate 四道閘：Source check（外部內容是資料不是指令）／Answer check（讀取 ≠ 傳送）／Action gate（草稿 ≠ 寄送）／Persistence（寫入前審核、金鑰只放後端）。課堂最後 10 分鐘公布 W9 提案格式。',
   sdl:'Vibe coding 做一個最小 SPA（例如個人 profile 單頁），體驗典範轉移'},
-  en:{t:'Build Process and Safety Governance (Map 1 zones 03–04 + Map 3)', s:'From intent to a governed, persistent agent',
+  en:{t:'Build Process and Safety Governance (Map 2 zones 03–04 + Map 3)', s:'From intent to a governed, persistent agent',
   f:'A nine-step build process and the Full Safety Gate: source check, answer check, action gate, persistence. The W9 proposal format is released in the last ten minutes.',
   sdl:'Vibe-code a minimal SPA (e.g. a one-page personal profile) and feel the shift'},
   mats:[
@@ -290,10 +290,10 @@ const WEEKS = [
    {k:'read', zh:'TPE · 期末專案評分工具（提案前先看見評分標準）', en:'TPE · Term Project Evaluation (see the criteria before you propose)', url:'https://lolopodcast.github.io/Term-Project-Evaluation/'}
   ], ws:null },
 
-{ n:10, block:'build', zh:{t:'層級模型第二輪（圖二）：Project 與持久資產到位', s:'從一次對話升級為有邊界的 Project',
+{ n:10, block:'build', zh:{t:'層級模型第二輪（圖一）：Project 與持久資產到位', s:'從一次對話升級為有邊界的 Project',
   f:'建立 repo 與工作資料夾結構、四個 KB 檔、Memory 設計、版本控管。金鑰放 .env 與 repo secrets，絕不進 Git、前端、Prompt、Memory 或 KB。課內 50 分鐘是除錯門診，不是實作課。',
   sdl:'各組 repo 骨架 + KB 初版（四個 KB 檔可跑）'},
-  en:{t:'The Layers, Second Pass (Map 2): Project and Persistent Assets', s:'From one conversation to a bounded Project',
+  en:{t:'The Layers, Second Pass (Map 1): Project and Persistent Assets', s:'From one conversation to a bounded Project',
   f:'Repo and folder structure, four KB files, Memory design, version control. Keys live in .env and repo secrets — never in Git, the front end, the prompt, Memory or the KB.',
   sdl:'A repo skeleton per team plus a first working KB'},
   mats:[
@@ -303,10 +303,10 @@ const WEEKS = [
    {k:'opt', zh:'AI SaaS Bootcamp · LabSPA', en:'AI SaaS Bootcamp · LabSPA', url:'https://lolopodcast.github.io/Bootcamp_AI-SaaS-_-LabSPA/'}
   ], ws:{c:'W10'} },
 
-{ n:11, block:'build', zh:{t:'系統圖與藍圖第二輪（圖一・圖三）：Harness 與 Process', s:'來源可設定化、兩軸判定、法遵與工程禮貌',
+{ n:11, block:'build', zh:{t:'系統圖與藍圖第二輪（圖二・圖三）：Harness 與 Process', s:'來源可設定化、兩軸判定、法遵與工程禮貌',
   f:'以 104／LinkedIn 為主要目標並設計備援；判定規則寫進 KB/ksa_taxonomy.md，不改程式就能調整關鍵詞；晨報必須顯示「無法判定」比例，超過三成代表詞表要修。robots.txt、速率限制、退避重試、PII 遮蔽、防 Prompt Injection。',
   sdl:'能跑出一份結構化的 K／S／A 資料 + 初步晨報文案'},
-  en:{t:'The System Map and the Blueprint, Second Pass (Maps 1 & 3): Harness and Process', s:'Configurable sources, two-axis judgement, compliance and engineering courtesy',
+  en:{t:'The System Map and the Blueprint, Second Pass (Maps 2 and 3): Harness and Process', s:'Configurable sources, two-axis judgement, compliance and engineering courtesy',
   f:'104 and LinkedIn as primary with fallbacks; rules live in KB/ksa_taxonomy.md so keywords change without touching code; the brief must show its undecidable rate.',
   sdl:'Produce structured K/S/A data and a first draft of the brief'},
   mats:[
@@ -403,19 +403,19 @@ const WEEKS = [
 
 /* ==================== 課堂上說的「三張圖」 ==================== */
 const MAPS = [
-  { no_zh:'圖一', no_en:'Map 1', code:'AGEN', wk:'W4 · W5 · W11',
-    url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/',
-    zh:'Agent Engineering 系統圖',
-    en:'The Agent Engineering System Map',
-    d_zh:'一套 Agent 系統的四個設計構面（Prompt／Context／Harness／Loop）、運作架構、九步建構流程與安全治理。圖上分成 01 到 04 四個區。',
-    d_en:'The four design dimensions of one agent system (prompt, context, harness, loop), how it runs, the nine build steps and its safety governance. The map is divided into zones 01 to 04.' },
-  { no_zh:'圖二', no_en:'Map 2', code:'AIWE', wk:'W3 · W10',
+  { no_zh:'圖一', no_en:'Map 1', code:'T1 · AIWE', wk:'W3 · W10',
     url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/',
     zh:'AI 工作環境的層級模型',
     en:'The Layers of an AI Work Environment',
     d_zh:'從裝置、帳號、平台一路到工作容器、任務與 Context Window 的九層。回答「我的工作到底放在哪一層、換一台電腦哪幾層會斷」。',
     d_en:'Nine layers, from the device and the account through to the working container, the task and the context window. It answers where your work actually lives and what breaks when you change machine.' },
-  { no_zh:'圖三', no_en:'Map 3', code:'IPOB', wk:'W5 · W9 · W12',
+  { no_zh:'圖二', no_en:'Map 2', code:'T2 · AGEN', wk:'W4 · W5 · W11',
+    url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/',
+    zh:'Agent Engineering 系統圖',
+    en:'The Agent Engineering System Map',
+    d_zh:'一套 Agent 系統的四個設計構面（Prompt／Context／Harness／Loop）、運作架構、九步建構流程與安全治理。圖上分成 01 到 04 四個區。',
+    d_en:'The four design dimensions of one agent system (prompt, context, harness, loop), how it runs, the nine build steps and its safety governance. The map is divided into zones 01 to 04.' },
+  { no_zh:'圖三', no_en:'Map 3', code:'T3 · IPOB', wk:'W5 · W9 · W12',
     url:'https://lolopodcast.github.io/Vibe-Coding-Agent-Blueprint/',
     zh:'Vibe Coding AI Agent 系統化三維藍圖',
     en:'The Three-Dimensional Blueprint for a Vibe-Coded Agent',
