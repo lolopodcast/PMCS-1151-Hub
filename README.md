@@ -19,6 +19,7 @@ One self-contained HTML file. React, Tailwind and DOMPurify load from pinned CDN
 
 ## Notes for maintenance
 
+- **The block strip follows the narration.** In *Weekly Materials*, read-aloud tags every spoken chunk with the week it belongs to; the matching block chip is ringed with a pulsing dot and the strip scrolls itself so that chip sits in the middle. The strip is a single horizontal scroll row (scrollbar hidden) at every width, which is what makes centring possible on a phone. Read-aloud also honours the block filter — filter to one block and only those weeks are read.
 - **The course calendar is derived, not hard-coded.** `W1_DATE` (currently `2026-09-09`, a Wednesday) is the only date in the file; every week, milestone and D-day date is computed from it. Changing that one constant moves the whole calendar. `DDAY_WEEK` is 15.
 - The page carries a **passphrase curtain**, not security. The passphrase is hard-coded in front-end JavaScript, so anyone who opens view-source or DevTools can read it. It keeps casual passers-by out of the entry page; it is not a guarantee that the contents stay private, and it must never be reused as a password for any real account. It is the same passphrase as the worksheet index, but each repository remembers it separately, so a student enters it once per site per browser.
 - Unlocking is remembered in that browser's `localStorage` under `pmcs_hub_gate`. A different computer, a cleared cache or a private window will ask again.

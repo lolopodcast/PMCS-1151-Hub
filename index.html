@@ -28,6 +28,8 @@ tailwind.config = {
   body { font-family: 'Inter', sans-serif; }
   @keyframes fadeInUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
   .animate-fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+  .no-sb { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-sb::-webkit-scrollbar { display: none; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -803,6 +805,7 @@ function App() {
   const [section, setSection] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [ttsState, setTtsState] = useState('idle');
+  const [ttsWeek, setTtsWeek] = useState(null);   /* 語音正在唸的週次 */
   const [openWeek, setOpenWeek] = useState(null);
   const [blockFilter, setBlockFilter] = useState('all');
   const ttsRun = useRef(0);
@@ -821,7 +824,20 @@ function App() {
     return () => document.removeEventListener('mousedown', h);
   }, []);
 
-  useEffect(() => { try { speechSynthesis.cancel(); } catch (e) {} setTtsState('idle'); }, [section, lang]);
+  useEffect(() => { try { speechSynthesis.cancel(); } catch (e) {} setTtsState('idle'); setTtsWeek(null); }, [section, lang]);
+
+  /* ===== 朗讀中的區塊：主題列自動捲到水平置中 ===== */
+  const chipBoxRef = useRef(null);
+  const chipRefs = useRef({});
+  const ttsBlock = ttsWeek ? ((WEEKS.find(w => w.n === ttsWeek) || {}).block || null) : null;
+  useEffect(() => {
+    if (section !== 1 || !ttsBlock) return;
+    const box = chipBoxRef.current, el = chipRefs.current[ttsBlock];
+    if (!box || !el) return;
+    const br = box.getBoundingClientRect(), er = el.getBoundingClientRect();
+    const delta = (er.left + er.width / 2) - (br.left + br.width / 2);
+    if (Math.abs(delta) > 2) box.scrollTo({ left: box.scrollLeft + delta, behavior: 'smooth' });
+  }, [ttsBlock, section]);
 
   /* ===== 日期計算 ===== */
   const cal = useMemo(() => {
@@ -854,38 +870,42 @@ function App() {
   /* ===== TTS ===== */
   const handleTTS = (action) => {
     if (!('speechSynthesis' in window)) return;
-    if (action === 'stop') { ttsRun.current += 1; speechSynthesis.cancel(); setTtsState('idle'); return; }
+    if (action === 'stop') { ttsRun.current += 1; speechSynthesis.cancel(); setTtsState('idle'); setTtsWeek(null); return; }
     if (action === 'pause') { speechSynthesis.pause(); setTtsState('paused'); return; }
     if (action === 'play') {
       if (ttsState === 'paused') { speechSynthesis.resume(); setTtsState('playing'); return; }
       speechSynthesis.cancel();
       const sep = lang === 'zh' ? '。 ' : '. ';
-      let texts = [];
+      /* items：每一段文字可帶一個 wk 標記，讓畫面知道正在唸哪一週 */
+      let items = [];
+      const put = (str, wk) => { if (str) items.push({ s: String(str), wk: wk == null ? null : wk }); };
       if (section === 0) {
-        texts = [t.course, t.ov_title, t.ov_what, t.ov_what_p];
+        [t.course, t.ov_title, t.ov_what, t.ov_what_p].forEach(x => put(x));
       } else if (section === 1) {
-        texts = [t.wk_title, t.wk_sub];
-        WEEKS.forEach(w => texts.push(`W${w.n}. ${w[lang].t}. ${w[lang].s}`));
+        put(t.wk_title); put(t.wk_sub);
+        /* 只唸畫面上實際列出的週次：篩選了哪一區塊就唸哪一區塊 */
+        (blockFilter === 'all' ? WEEKS : WEEKS.filter(w => w.block === blockFilter))
+          .forEach(w => put(`W${w.n}. ${w[lang].t}. ${w[lang].s}`, w.n));
       } else if (section === 2) {
-        texts = [t.tp_title, t.tp_intro, t.tp_spec];
-        TP_SPEC.forEach((s, i) => texts.push(`${i + 1}. ${s[lang]}. ${lang === 'zh' ? s.d_zh : s.d_en}`));
-        texts.push(t.tp_ladder, t.tp_ladder_note);
-        LADDER.forEach(l => texts.push(`Level ${l.lv}. ${l[lang]}. ${lang === 'zh' ? l.zh_d : l.en_d}`));
-        texts.push(t.tp_dday, t.tp_dday_note);
+        [t.tp_title, t.tp_intro, t.tp_spec].forEach(x => put(x));
+        TP_SPEC.forEach((x, i) => put(`${i + 1}. ${x[lang]}. ${lang === 'zh' ? x.d_zh : x.d_en}`));
+        put(t.tp_ladder); put(t.tp_ladder_note);
+        LADDER.forEach(l => put(`Level ${l.lv}. ${l[lang]}. ${lang === 'zh' ? l.zh_d : l.en_d}`));
+        put(t.tp_dday); put(t.tp_dday_note);
       } else if (section === 3) {
-        texts = [t.as_title, t.as_weights];
-        GRADE.forEach(g => texts.push(`${g[lang]} ${g.pct}%`));
-        texts.push(t.as_ws, t.as_ws_p, t.as_w16);
-        W16_CHECK.forEach(c => texts.push(`${c[lang]}. ${lang === 'zh' ? c.e_zh : c.e_en}`));
+        put(t.as_title); put(t.as_weights);
+        GRADE.forEach(g => put(`${g[lang]} ${g.pct}%`));
+        put(t.as_ws); put(t.as_ws_p); put(t.as_w16);
+        W16_CHECK.forEach(c => put(`${c[lang]}. ${lang === 'zh' ? c.e_zh : c.e_en}`));
       } else if (section === 4) {
-        texts = [t.et_title, t.et_intro];
-        ETHICS.forEach((e, i) => texts.push(`${i + 1}. ${e[lang]}`));
-        texts.push(t.et_gate, `${t.et_g1}. ${t.et_g1d}`, `${t.et_g2}. ${t.et_g2d}`, `${t.et_g3}. ${t.et_g3d}`, `${t.et_g4}. ${t.et_g4d}`);
+        put(t.et_title); put(t.et_intro);
+        ETHICS.forEach((e, i) => put(`${i + 1}. ${e[lang]}`));
+        put(t.et_gate);
+        [[t.et_g1, t.et_g1d], [t.et_g2, t.et_g2d], [t.et_g3, t.et_g3d], [t.et_g4, t.et_g4d]].forEach(([a, b2]) => put(`${a}. ${b2}`));
       } else {
-        texts = [t.rs_title, t.rs_teach];
-        TEACH.forEach(x => texts.push(`${x.code}. ${x[lang]}`));
+        put(t.rs_title); put(t.rs_teach);
+        TEACH.forEach(x => put(`${x.code}. ${x[lang]}`));
       }
-      texts = texts.filter(Boolean);
       /* 語音挑選：與課程既有 SPA 完全一致，不做任何更動 */
       const voices = speechSynthesis.getVoices();
       let voice = null, code = 'en-GB';
@@ -897,41 +917,52 @@ function App() {
         code = 'en-GB';
       }
 
-      /* Chrome 對單一長 utterance 會靜默失敗（網路語音尤其明顯），因此切成短句依序播放 */
+      /* Chrome 對單一長 utterance 會靜默失敗（網路語音尤其明顯），因此切成短句依序播放。
+         切法改為「逐段各自切」，這樣每一小段都還知道自己屬於哪一週。 */
       const CHUNK = lang === 'zh' ? 140 : 190;
-      const full = texts.join(sep);
-      const sentences = (() => {
-        const out = []; let cur = '';
-        for (let i = 0; i < full.length; i++) {
-          cur += full[i];
-          const c = full[i];
-          if ('。！？；!?;'.indexOf(c) >= 0 || (c === '.' && /\s|$/.test(full[i + 1] || ''))) { out.push(cur); cur = ''; }
-        }
-        if (cur.trim()) out.push(cur);
-        return out;
-      })();
-      const packed = []; let acc = '';
-      sentences.forEach(sent0 => {
-        let sent = sent0;
-        while (sent.length > CHUNK) {
-          let cut = sent.lastIndexOf(' ', CHUNK);
-          if (cut < CHUNK * 0.5) cut = CHUNK;
-          if (acc) { packed.push(acc); acc = ''; }
-          packed.push(sent.slice(0, cut));
-          sent = sent.slice(cut);
-        }
-        if ((acc + sent).length > CHUNK) { if (acc) packed.push(acc); acc = sent; }
-        else acc += sent;
+      const packOne = (full) => {
+        const sentences = (() => {
+          const out = []; let cur = '';
+          for (let i = 0; i < full.length; i++) {
+            cur += full[i];
+            const c = full[i];
+            if ('。！？；!?;'.indexOf(c) >= 0 || (c === '.' && /\s|$/.test(full[i + 1] || ''))) { out.push(cur); cur = ''; }
+          }
+          if (cur.trim()) out.push(cur);
+          return out;
+        })();
+        const packed = []; let acc = '';
+        sentences.forEach(sent0 => {
+          let sent = sent0;
+          while (sent.length > CHUNK) {
+            let cut = sent.lastIndexOf(' ', CHUNK);
+            if (cut < CHUNK * 0.5) cut = CHUNK;
+            if (acc) { packed.push(acc); acc = ''; }
+            packed.push(sent.slice(0, cut));
+            sent = sent.slice(cut);
+          }
+          if ((acc + sent).length > CHUNK) { if (acc) packed.push(acc); acc = sent; }
+          else acc += sent;
+        });
+        if (acc.trim()) packed.push(acc);
+        return packed;
+      };
+      const queue = [];
+      items.forEach(it => {
+        /* 本身已有句末標點就不再補一個，避免唸出「⋯⋯..」 */
+        const tail = /[.。！？；!?;]\s*$/.test(it.s) ? ' ' : sep;
+        packOne(it.s + tail).forEach(c => queue.push({ c, wk: it.wk }));
       });
-      if (acc.trim()) packed.push(acc);
 
       ttsRun.current += 1;
       const myRun = ttsRun.current;
       let qi = 0;
       const speakNext = () => {
         if (myRun !== ttsRun.current) return;
-        if (qi >= packed.length) { setTtsState('idle'); return; }
-        const u = new SpeechSynthesisUtterance(packed[qi++]);
+        if (qi >= queue.length) { setTtsState('idle'); setTtsWeek(null); return; }
+        const item = queue[qi++];
+        setTtsWeek(item.wk);
+        const u = new SpeechSynthesisUtterance(item.c);
         u.rate = 0.95;
         if (voice) u.voice = voice;
         u.lang = code;
@@ -1099,16 +1130,25 @@ function App() {
           <p className="text-[14px] text-slate-500 dark:text-slate-400">{t.wk_sub}</p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {[['all', t.wk_all]].concat(['intro','arch','role','tp','build','pjm','flex'].map(b => [b, BLOCKS[b][lang]])).map(([k, label]) => (
-            <button key={k} onClick={() => setBlockFilter(k)}
-              className={`px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-colors
-                ${blockFilter === k
-                  ? 'bg-[#004030] text-[#D8C3A5] border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5]'}`}>
-              {label}
-            </button>
-          ))}
+        <div ref={chipBoxRef} className="no-sb -mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto scroll-smooth">
+          <div className="flex flex-nowrap gap-2 w-max py-1">
+            {[['all', t.wk_all]].concat(['intro','arch','role','tp','build','pjm','flex'].map(b => [b, BLOCKS[b][lang]])).map(([k, label]) => {
+              const reading = ttsBlock === k;
+              return (
+                <button key={k} ref={el => { chipRefs.current[k] = el; }} onClick={() => setBlockFilter(k)}
+                  aria-current={reading ? 'true' : undefined}
+                  className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-all
+                    flex items-center gap-1.5
+                    ${blockFilter === k
+                      ? 'bg-[#004030] text-[#D8C3A5] border-[#004030] dark:bg-[#D8C3A5] dark:text-[#004030] dark:border-[#D8C3A5]'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#004030] dark:hover:border-[#D8C3A5]'}
+                    ${reading ? 'ring-2 ring-offset-2 ring-[#004030] dark:ring-[#D8C3A5] ring-offset-[#f4f4f4] dark:ring-offset-[#121212]' : ''}`}>
+                  {reading && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" aria-hidden="true"></span>}
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="space-y-3">
