@@ -280,20 +280,20 @@ const WEEKS = [
   ], ws:{c:'W08'} },
 
 { n:9, block:'tp', mile:'proposal', zh:{t:'期末專案提案（BBB 線上）', s:'晨報 Agent 規格書提案 · 九個必填項',
-  f:'對應圖三的 INPUT／INTENTION 欄，九項：目標與使用者／檢索範圍設定／KB 設計／資料來源與法遵聲明／分析架構（含兩軸判定）／技術棧選擇／執行期架構／團隊分工／里程碑。教師與同儕以書面或錄影回饋。',
+  f:'對應圖三（IPOB 藍圖）的 INPUT／INTENTION 欄，九項：目標與使用者／檢索範圍設定／KB 設計／資料來源與法遵聲明／分析架構（含兩軸判定）／技術棧選擇／執行期架構／團隊分工／里程碑。教師與同儕以書面或錄影回饋。',
   sdl:'提案前必讀晨報型產品的原型教材，並先看過評分標準'},
   en:{t:'Term Project Proposal (online)', s:'The morning-brief agent spec — nine required items',
-  f:'Mapped to the INPUT/INTENTION column of Map 3. Feedback from the instructor and peers in writing or on video.',
+  f:'Mapped to the INPUT/INTENTION column of Map 3 (the IPOB blueprint). Feedback from the instructor and peers in writing or on video.',
   sdl:'Read the prototype material and the evaluation criteria before proposing'},
   mats:[
    {k:'main', zh:'AI-Native Product Builder Bootcamp — 商業新聞與分析（晨報型產品原型，提案前必讀）', en:'AI-Native Product Builder Bootcamp — Business News & Analysis (the prototype; required before proposing)', url:'https://lolopodcast.github.io/AI-Native-Product-Builder-Bootcamp_Business-News-and-Analysis/'},
    {k:'read', zh:'TPE · 期末專案評分工具（提案前先看見評分標準）', en:'TPE · Term Project Evaluation (see the criteria before you propose)', url:'https://lolopodcast.github.io/Term-Project-Evaluation/'}
   ], ws:null },
 
-{ n:10, block:'build', zh:{t:'圖二第二輪：Project 與持久資產到位', s:'從一次對話升級為有邊界的 Project',
+{ n:10, block:'build', zh:{t:'層級模型第二輪（圖二）：Project 與持久資產到位', s:'從一次對話升級為有邊界的 Project',
   f:'建立 repo 與工作資料夾結構、四個 KB 檔、Memory 設計、版本控管。金鑰放 .env 與 repo secrets，絕不進 Git、前端、Prompt、Memory 或 KB。課內 50 分鐘是除錯門診，不是實作課。',
   sdl:'各組 repo 骨架 + KB 初版（四個 KB 檔可跑）'},
-  en:{t:'Map 2, Second Pass: Project and Persistent Assets', s:'From one conversation to a bounded Project',
+  en:{t:'The Layers, Second Pass (Map 2): Project and Persistent Assets', s:'From one conversation to a bounded Project',
   f:'Repo and folder structure, four KB files, Memory design, version control. Keys live in .env and repo secrets — never in Git, the front end, the prompt, Memory or the KB.',
   sdl:'A repo skeleton per team plus a first working KB'},
   mats:[
@@ -303,10 +303,10 @@ const WEEKS = [
    {k:'opt', zh:'AI SaaS Bootcamp · LabSPA', en:'AI SaaS Bootcamp · LabSPA', url:'https://lolopodcast.github.io/Bootcamp_AI-SaaS-_-LabSPA/'}
   ], ws:{c:'W10'} },
 
-{ n:11, block:'build', zh:{t:'圖一與圖三第二輪：Harness 與 Process', s:'來源可設定化、兩軸判定、法遵與工程禮貌',
+{ n:11, block:'build', zh:{t:'系統圖與藍圖第二輪（圖一・圖三）：Harness 與 Process', s:'來源可設定化、兩軸判定、法遵與工程禮貌',
   f:'以 104／LinkedIn 為主要目標並設計備援；判定規則寫進 KB/ksa_taxonomy.md，不改程式就能調整關鍵詞；晨報必須顯示「無法判定」比例，超過三成代表詞表要修。robots.txt、速率限制、退避重試、PII 遮蔽、防 Prompt Injection。',
   sdl:'能跑出一份結構化的 K／S／A 資料 + 初步晨報文案'},
-  en:{t:'Maps 1 and 3, Second Pass: Harness and Process', s:'Configurable sources, two-axis judgement, compliance and engineering courtesy',
+  en:{t:'The System Map and the Blueprint, Second Pass (Maps 1 & 3): Harness and Process', s:'Configurable sources, two-axis judgement, compliance and engineering courtesy',
   f:'104 and LinkedIn as primary with fallbacks; rules live in KB/ksa_taxonomy.md so keywords change without touching code; the brief must show its undecidable rate.',
   sdl:'Produce structured K/S/A data and a first draft of the brief'},
   mats:[
@@ -316,10 +316,10 @@ const WEEKS = [
    {k:'opt', zh:'AI-Native Product Builder Bootcamp（第二次，資料串接）', en:'AI-Native Product Builder Bootcamp (second pass — data integration)', url:'https://lolopodcast.github.io/AI-Native-Product-Builder-Bootcamp_Business-News-and-Analysis/'}
   ], ws:{c:'W11'} },
 
-{ n:12, block:'build', mile:'runnable', zh:{t:'圖三第二輪：Output & Loop，心跳與部署', s:'可運行版上線（里程碑）',
+{ n:12, block:'build', mile:'runnable', zh:{t:'藍圖第二輪（圖三）：Output & Loop，心跳與部署', s:'可運行版上線（里程碑）',
   f:'Heartbeat 排程（含 UTC 與台北時區換算）與失敗通知、ReAct Loop 的停止條件與成本上限、降級模式、QC Feedback 自動退回重寫、部署與空白畫面排查。',
   sdl:'可運行版上線 —— 這是 W12 里程碑'},
-  en:{t:'Map 3, Second Pass: Output & Loop, Heartbeat and Deployment', s:'A runnable version goes live (milestone)',
+  en:{t:'The Blueprint, Second Pass (Map 3): Output & Loop, Heartbeat and Deployment', s:'A runnable version goes live (milestone)',
   f:'Heartbeat scheduling with timezone conversion and failure notification; ReAct loop stop conditions and cost ceilings; the degraded mode; QC feedback; deployment.',
   sdl:'Ship a runnable version — this is the W12 milestone'},
   mats:[
@@ -401,6 +401,28 @@ const WEEKS = [
   ], ws:null }
 ];
 
+/* ==================== 課堂上說的「三張圖」 ==================== */
+const MAPS = [
+  { no_zh:'圖一', no_en:'Map 1', code:'AGEN', wk:'W4 · W5 · W11',
+    url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/',
+    zh:'Agent Engineering 系統圖',
+    en:'The Agent Engineering System Map',
+    d_zh:'一套 Agent 系統的四個設計構面（Prompt／Context／Harness／Loop）、運作架構、九步建構流程與安全治理。圖上分成 01 到 04 四個區。',
+    d_en:'The four design dimensions of one agent system (prompt, context, harness, loop), how it runs, the nine build steps and its safety governance. The map is divided into zones 01 to 04.' },
+  { no_zh:'圖二', no_en:'Map 2', code:'AIWE', wk:'W3 · W10',
+    url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/',
+    zh:'AI 工作環境的層級模型',
+    en:'The Layers of an AI Work Environment',
+    d_zh:'從裝置、帳號、平台一路到工作容器、任務與 Context Window 的九層。回答「我的工作到底放在哪一層、換一台電腦哪幾層會斷」。',
+    d_en:'Nine layers, from the device and the account through to the working container, the task and the context window. It answers where your work actually lives and what breaks when you change machine.' },
+  { no_zh:'圖三', no_en:'Map 3', code:'IPOB', wk:'W5 · W9 · W12',
+    url:'https://lolopodcast.github.io/Vibe-Coding-Agent-Blueprint/',
+    zh:'Vibe Coding AI Agent 系統化三維藍圖',
+    en:'The Three-Dimensional Blueprint for a Vibe-Coded Agent',
+    d_zh:'Input → Process → Output 三段藍圖，加上一條貫穿全圖的治理層。它同時就是期末專案規格書的骨架。',
+    d_en:'A blueprint in three columns — input, process, output — with a governance layer running through all of them. It doubles as the skeleton of your term project specification.' }
+];
+
 /* ==================== 六份教學型 SPA ==================== */
 const TEACH = [
   { code:'T1 · AIWE', wk:'W3 · W10', url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/',
@@ -426,7 +448,7 @@ const TP_SPEC = [
   { zh:'分析架構', en:'Analysis framework', d_zh:'Competency = f(K, S, A) 對應 JD 的欄位定義與抽取規則。必含兩軸判定：管理對象與層級，兩欄都不採信職稱，且都必須附上判斷依據的引文。層級全收不過濾。', d_en:'Competency = f(K, S, A) mapped to JD fields. Both axes — object of management and seniority — must cite the source sentence and must not trust the title.' },
   { zh:'技術棧選擇', en:'Technology stack', d_zh:'A 案 GitHub Pages + GitHub Actions；B 案 Netlify 或 Vercel + Serverless Function。', d_en:'Option A: GitHub Pages + Actions. Option B: Netlify or Vercel + a serverless function.' },
   { zh:'執行期架構', en:'Runtime architecture', d_zh:'免費額度 LLM API 的選擇、額度估算、降級模式設計。', d_en:'Which free-tier LLM API, the quota estimate, and the degraded-mode design.' },
-  { zh:'團隊分工', en:'Team roles', d_zh:'對應圖三的五個角色：管家、教練、Data Fetcher、AI Summarizer、QA & DevOps。', d_en:'The five roles from Map 3: Butler, Coach, Data Fetcher, AI Summarizer, QA & DevOps.' },
+  { zh:'團隊分工', en:'Team roles', d_zh:'對應圖三（IPOB 藍圖）的五個角色：管家、教練、Data Fetcher、AI Summarizer、QA & DevOps。', d_en:'The five roles from Map 3 (the IPOB blueprint): Butler, Coach, Data Fetcher, AI Summarizer, QA & DevOps.' },
   { zh:'里程碑', en:'Milestones', d_zh:'W12 可運行版上線、D day（最晚 W15 上課日）、W16 正式驗收。', d_en:'W12 runnable version, D day (no later than the W15 class), W16 acceptance.' }
 ];
 
@@ -531,6 +553,10 @@ en: {
   wk_main: 'Required · first', wk_read: 'Required', wk_opt: 'Optional', wk_yt: 'Video', wk_pdf: 'Lecture deck',
   wk_none: 'No worksheet this week',
   wk_open_ws: 'Open worksheet',
+  wk_maps: 'First — the three maps this course keeps referring to',
+  wk_maps_note: 'Weeks 3 to 5 introduce them; weeks 10 to 12 come back to the same three while you build. Wherever a week says “Map 1”, “Map 2” or “Map 3”, this is what it means.',
+  wk_maps_wk: 'Used in',
+  wk_maps_open: 'Open the teaching unit',
 
   /* TP */
   tp_title: 'The morning-brief agent',
@@ -630,6 +656,10 @@ zh: {
   wk_main: '必讀 · 第一項', wk_read: '必讀', wk_opt: '選讀', wk_yt: '影音', wk_pdf: '講義',
   wk_none: '本週無學習單',
   wk_open_ws: '開啟學習單',
+  wk_maps: '先說清楚：課堂上講的「三張圖」是哪三張',
+  wk_maps_note: 'W3-W5 第一輪把三張圖講一遍，W10-W12 第二輪在你自己動手建置時再走一次。後面每一週寫到「圖一」「圖二」「圖三」，指的就是這三張。',
+  wk_maps_wk: '出現在',
+  wk_maps_open: '開啟教材',
 
   tp_title: '晨報 Agent',
   tp_intro: '期末專案不是一份提案文件，而是一個會自己運作的系統：每天早上自己更新、任何人打得開、改一個文字檔就能換一個產業。',
@@ -787,8 +817,8 @@ const MatRow = ({ m, lang, t }) => {
   );
 };
 
-const Card = ({ children, className = '' }) => (
-  <div className={`bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>
+const Card = ({ children, className = '', innerRef }) => (
+  <div ref={innerRef} className={`bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>
 );
 
 const H2 = ({ children }) => (
@@ -829,6 +859,7 @@ function App() {
   /* ===== 朗讀中的區塊：主題列自動捲到水平置中 ===== */
   const chipBoxRef = useRef(null);
   const chipRefs = useRef({});
+  const weekRefs = useRef({});
   const ttsBlock = ttsWeek ? ((WEEKS.find(w => w.n === ttsWeek) || {}).block || null) : null;
   useEffect(() => {
     if (section !== 1 || !ttsBlock) return;
@@ -838,6 +869,30 @@ function App() {
     const delta = (er.left + er.width / 2) - (br.left + br.width / 2);
     if (Math.abs(delta) > 2) box.scrollTo({ left: box.scrollLeft + delta, behavior: 'smooth' });
   }, [ttsBlock, section]);
+
+  /* ===== 正在唸的那一週：垂直捲到頁首與主題列下方 ===== */
+  useEffect(() => {
+    if (section !== 1 || !ttsWeek) return;
+    const card = weekRefs.current[ttsWeek];
+    const box = chipBoxRef.current;
+    if (!card) return;
+    const HEADER = 64;                                   /* 固定頁首 h-16 */
+    const strip = box ? box.getBoundingClientRect().height + 16 : 0;   /* sticky 主題列含內距 */
+    const top = window.scrollY + card.getBoundingClientRect().top - HEADER - strip - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }, [ttsWeek, section]);
+
+  /* ===== 朗讀途中改變篩選：停止朗讀，避免唸的和看的對不起來 ===== */
+  const filterAtPlay = useRef(blockFilter);
+  useEffect(() => {
+    if (ttsState === 'idle') { filterAtPlay.current = blockFilter; return; }
+    if (filterAtPlay.current !== blockFilter) {
+      ttsRun.current += 1;
+      try { speechSynthesis.cancel(); } catch (e) {}
+      setTtsState('idle'); setTtsWeek(null);
+      filterAtPlay.current = blockFilter;
+    }
+  }, [blockFilter, ttsState]);
 
   /* ===== 日期計算 ===== */
   const cal = useMemo(() => {
@@ -882,8 +937,13 @@ function App() {
       if (section === 0) {
         [t.course, t.ov_title, t.ov_what, t.ov_what_p].forEach(x => put(x));
       } else if (section === 1) {
-        put(t.wk_title); put(t.wk_sub);
-        /* 只唸畫面上實際列出的週次：篩選了哪一區塊就唸哪一區塊 */
+        /* 未篩選才唸整節抬頭；篩選了就從那個區塊本身開始唸 */
+        if (blockFilter === 'all') {
+          put(t.wk_title); put(t.wk_sub);
+          put(t.wk_maps);
+          MAPS.forEach(m => put(`${lang === 'zh' ? m.no_zh : m.no_en}. ${m[lang]}. ${lang === 'zh' ? m.d_zh : m.d_en}`));
+        }
+        else if (BLOCKS[blockFilter]) { put(BLOCKS[blockFilter][lang]); }
         (blockFilter === 'all' ? WEEKS : WEEKS.filter(w => w.block === blockFilter))
           .forEach(w => put(`W${w.n}. ${w[lang].t}. ${w[lang].s}`, w.n));
       } else if (section === 2) {
@@ -1130,7 +1190,35 @@ function App() {
           <p className="text-[14px] text-slate-500 dark:text-slate-400">{t.wk_sub}</p>
         </div>
 
-        <div ref={chipBoxRef} className="no-sb -mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto scroll-smooth">
+        {/* 三張圖說明：後面每一週都會引用「圖一／圖二／圖三」，先在這裡定義 */}
+        <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
+          <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5]">{t.wk_maps}</h3>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.wk_maps_note}</p>
+          <div className="mt-4 space-y-3">
+            {MAPS.map(m => (
+              <div key={m.code} className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4
+                pt-3 border-t border-slate-100 dark:border-slate-700">
+                <div className="shrink-0 sm:w-28">
+                  <p className="font-serif font-black text-base text-[#004030] dark:text-[#D8C3A5]">{lang === 'zh' ? m.no_zh : m.no_en}</p>
+                  <p className="font-mono text-[11px] font-bold text-slate-400">{m.code}</p>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <a href={m.url} target="_blank" rel="noopener noreferrer"
+                    className="group inline-flex items-start gap-1.5 text-[14px] font-bold text-slate-800 dark:text-slate-100
+                      hover:text-[#004030] dark:hover:text-[#D8C3A5]">
+                    {m[lang]}<span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+                  </a>
+                  <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? m.d_zh : m.d_en}</p>
+                  <p className="mt-1.5 text-[11px] font-bold text-slate-400">{t.wk_maps_wk} {m.wk}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <div className="sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2
+          bg-[#f4f4f4]/95 dark:bg-[#121212]/95 backdrop-blur border-b border-slate-200/60 dark:border-slate-700/60">
+        <div ref={chipBoxRef} className="no-sb overflow-x-auto scroll-smooth">
           <div className="flex flex-nowrap gap-2 w-max py-1">
             {[['all', t.wk_all]].concat(['intro','arch','role','tp','build','pjm','flex'].map(b => [b, BLOCKS[b][lang]])).map(([k, label]) => {
               const reading = ttsBlock === k;
@@ -1150,6 +1238,7 @@ function App() {
             })}
           </div>
         </div>
+        </div>
 
         <div className="space-y-3">
           {shown.map(w => {
@@ -1157,7 +1246,8 @@ function App() {
             const open = openWeek === w.n;
             const isD = w.mile === 'dday';
             return (
-              <Card key={w.n} className={`overflow-hidden ${isD ? 'border-[#004030] dark:border-[#D8C3A5] border-2' : ''}`}>
+              <Card key={w.n} innerRef={el => { weekRefs.current[w.n] = el; }}
+                className={`overflow-hidden ${isD ? 'border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]' : ''}`}>
                 <button onClick={() => setOpenWeek(open ? null : w.n)} aria-expanded={open}
                   className="w-full text-left px-4 sm:px-5 py-4 flex items-start gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   <div className="shrink-0 w-14 sm:w-16">
@@ -1580,13 +1670,17 @@ function App() {
       </div>
 
       {/* FOOTER */}
-      <footer className="h-8 bg-[#004030] flex items-center justify-between px-4 shrink-0">
-        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs truncate">{t.date} · {t.copyright}</span>
-        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs flex items-center gap-3 shrink-0">
-          <span className="hidden sm:inline">{t.architect_label}&nbsp;
+      <footer className="h-8 bg-[#004030] flex items-center justify-between gap-2 px-3 sm:px-4 shrink-0">
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs truncate min-w-0">
+          <span className="hidden sm:inline">{t.date} · {t.copyright}</span>
+          <span className="sm:hidden">{t.date}</span>
+        </span>
+        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="whitespace-nowrap">
+            <span className="hidden sm:inline">{t.architect_label}&nbsp;</span>
             <a href={t.architect_url} target="_blank" rel="noopener noreferrer" className="text-[#D8C3A5] hover:text-white underline">Prof. Shihmin Lo</a>
           </span>
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-[#D8C3A5] hover:text-white font-bold">Top ↑</button>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-[#D8C3A5] hover:text-white font-bold whitespace-nowrap">Top ↑</button>
         </span>
       </footer>
     </div>
