@@ -1017,9 +1017,20 @@ const MatRow = ({ m, lang, t }) => {
   );
 };
 
-const Card = ({ children, className = '', innerRef }) => (
-  <div ref={innerRef} className={`bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>
-);
+/* 呼叫端自帶底色時，就不要再串上預設底色。
+   Tailwind 的 bg-white 與 bg-[#004030] 具體性相同，誰贏由產生出來的 CSS 順序決定——
+   實測 bg-white 會贏，於是深綠卡在淺色模式變成白底白字，整段看不見。
+   淺色與深色分開判斷：className 只給了 dark:bg-* 時，淺色的預設仍要留著。
+   (^|\s) 這個邊界讓 bg- 不會誤抓到 dark:bg-。 */
+const Card = ({ children, className = '', innerRef }) => {
+  const base = [
+    /(^|\s)bg-/.test(className) ? '' : 'bg-white',
+    /(^|\s)dark:bg-/.test(className) ? '' : 'dark:bg-slate-800/60'
+  ].filter(Boolean).join(' ');
+  return (
+    <div ref={innerRef} className={`${base} rounded-2xl border border-slate-200 dark:border-slate-700 ${className}`}>{children}</div>
+  );
+};
 
 const H2 = ({ children }) => (
   <h2 className="font-serif font-black text-2xl sm:text-3xl text-[#004030] dark:text-[#D8C3A5] mb-2">{children}</h2>
