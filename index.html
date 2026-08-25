@@ -1025,7 +1025,7 @@ const MatRow = ({ m, lang, t }) => {
       <span className="flex-1 min-w-0 text-[13px] leading-relaxed text-slate-700 dark:text-slate-200 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]">
         {m[lang]}
       </span>
-      <span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+      <span className="shrink-0 mt-1 text-slate-600 dark:text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
     </a>
   );
 };
@@ -1423,20 +1423,20 @@ function App() {
     return (
       <div className="space-y-8 animate-fade-in">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">{t.dept}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400 mb-2">{t.dept}</p>
           <h1 className="font-serif font-black text-2xl sm:text-4xl leading-tight text-[#004030] dark:text-[#D8C3A5]">{t.course}</h1>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t.teacher}</p>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{t.teacher}</p>
         </div>
 
         {/* 儀表板三格 */}
         <div className="grid gap-4 sm:grid-cols-3">
           <Card className="p-5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">{statusLabel}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">{statusLabel}</p>
             <p className="font-serif font-black text-xl text-[#004030] dark:text-[#D8C3A5] leading-snug">
               {statusWeek ? `W${statusWeek.n} · ${statusWeek[lang].t}` : '—'}
             </p>
             {statusWeek && (
-              <p className="mt-2 text-[13px] text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-[13px] text-slate-600 dark:text-slate-400">
                 {fmtFull(statusWeek.d)}
                 {statusDiff > 0 && <span> · {statusDiff} {t.ov_days}</span>}
                 {statusDiff === 0 && <span> · {t.ov_today}</span>}
@@ -1447,7 +1447,7 @@ function App() {
           <Card className="p-5 sm:col-span-2 bg-[#004030] dark:bg-[#004030] border-[#004030]">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[#D8C3A5]/70 mb-2">{t.ov_dday} · W{DDAY_WEEK}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#D8C3A5]/85 mb-2">{t.ov_dday} · W{DDAY_WEEK}</p>
                 <p className="font-serif font-black text-2xl text-[#D8C3A5]">{fmtFull(dday)}</p>
                 <p className="mt-1 text-[13px] text-white/60">{t.ov_dday_sub}</p>
               </div>
@@ -1455,7 +1455,7 @@ function App() {
                 <p className="font-serif font-black text-4xl sm:text-5xl text-white leading-none tabular-nums">
                   {ddayDiff > 0 ? ddayDiff : (ddayDiff === 0 ? '0' : Math.abs(ddayDiff))}
                 </p>
-                <p className="text-[11px] uppercase tracking-wider text-[#D8C3A5]/70 mt-1">
+                <p className="text-[11px] uppercase tracking-wider text-[#D8C3A5]/85 mt-1">
                   {ddayDiff > 0 ? t.ov_days : (ddayDiff === 0 ? t.ov_today : `${t.ov_days} · ${t.ov_passed}`)}
                 </p>
               </div>
@@ -1473,7 +1473,7 @@ function App() {
                   <span className={`w-2 h-2 rounded-full shrink-0 ${m.done ? 'bg-slate-400' : 'bg-[#004030] dark:bg-[#D8C3A5]'}`}></span>
                   <p className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{m.label}</p>
                 </div>
-                <p className="text-[12px] text-slate-500 dark:text-slate-400 pl-4">
+                <p className="text-[12px] text-slate-600 dark:text-slate-400 pl-4">
                   {fmtFull(m.d)}
                   {m.diff > 0 && <span> · {m.diff} {t.ov_days}</span>}
                   {m.diff === 0 && <span> · {t.ov_today}</span>}
@@ -1498,9 +1498,9 @@ function App() {
                 <button key={bk} onClick={() => { setBlockFilter(bk); goSection('wk'); }}
                   className="w-full text-left flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
                     bg-white dark:bg-slate-800/60 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
-                  <span className="font-mono text-[12px] font-bold text-slate-400 shrink-0 w-20">{rangeLabel}</span>
+                  <span className="font-mono text-[12px] font-bold text-slate-600 dark:text-slate-400 shrink-0 w-20">{rangeLabel}</span>
                   <span className="flex-1 min-w-0 text-[13px] sm:text-sm font-bold text-slate-700 dark:text-slate-200">{BLOCKS[bk][lang]}</span>
-                  <span className="text-slate-400 shrink-0"><IconChevronDown size={16} /></span>
+                  <span className="text-slate-600 dark:text-slate-400 shrink-0"><IconChevronDown size={16} /></span>
                 </button>
               );
             })}
@@ -1524,7 +1524,7 @@ function App() {
               {[[t.ov_pwa_pc, t.ov_pwa_pc_d], [t.ov_pwa_an, t.ov_pwa_an_d], [t.ov_pwa_ios, t.ov_pwa_ios_d]].map(([a, b2], i) => (
                 <div key={i} className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
                   <p className="text-[13px] font-bold text-slate-700 dark:text-slate-200">{a}</p>
-                  <p className="mt-1 text-[12px] leading-relaxed text-slate-500 dark:text-slate-400">{b2}</p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">{b2}</p>
                 </div>
               ))}
             </div>
@@ -1545,14 +1545,14 @@ function App() {
                 className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60
                   hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
                 <p className="flex items-center gap-1.5 text-sm font-bold text-[#004030] dark:text-[#D8C3A5]">{q.a}<IconExternal /></p>
-                <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">{q.b}</p>
+                <p className="mt-1 text-[12px] text-slate-600 dark:text-slate-400">{q.b}</p>
               </a>
             ) : (
               <button key={i} onClick={() => goSection(q.s)}
                 className="group text-left p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60
                   hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
                 <p className="text-sm font-bold text-[#004030] dark:text-[#D8C3A5]">{q.a}</p>
-                <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">{q.b}</p>
+                <p className="mt-1 text-[12px] text-slate-600 dark:text-slate-400">{q.b}</p>
               </button>
             ))}
           </div>
@@ -1568,7 +1568,7 @@ function App() {
       <div className="space-y-6 animate-fade-in">
         <div>
           <H2>{t.wk_title}</H2>
-          <p className="text-[14px] text-slate-500 dark:text-slate-400">{t.wk_sub}</p>
+          <p className="text-[14px] text-slate-600 dark:text-slate-400">{t.wk_sub}</p>
         </div>
 
         {/* 三張圖說明：後面每一週都會引用「圖一／圖二／圖三」，先在這裡定義。
@@ -1580,9 +1580,9 @@ function App() {
             hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             <span className="flex-1 min-w-0">
               <span className="block font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5]">{t.wk_maps}</span>
-              {!mapsOpen && <span className="block mt-1 text-[12px] text-slate-500 dark:text-slate-400">{t.wk_maps_peek}</span>}
+              {!mapsOpen && <span className="block mt-1 text-[12px] text-slate-600 dark:text-slate-400">{t.wk_maps_peek}</span>}
             </span>
-            <span className={`shrink-0 mt-1 text-slate-400 transition-transform ${mapsOpen ? 'rotate-180' : ''}`}>
+            <span className={`shrink-0 mt-1 text-slate-600 dark:text-slate-400 transition-transform ${mapsOpen ? 'rotate-180' : ''}`}>
               <IconChevronDown />
             </span>
           </summary>
@@ -1594,16 +1594,16 @@ function App() {
                   pt-3 border-t border-slate-100 dark:border-slate-700">
                   <div className="shrink-0 sm:w-28">
                     <p className="font-serif font-black text-base text-[#004030] dark:text-[#D8C3A5]">{lang === 'zh' ? m.no_zh : m.no_en}</p>
-                    <p className="font-mono text-[11px] font-bold text-slate-400">{m.code}</p>
+                    <p className="font-mono text-[11px] font-bold text-slate-600 dark:text-slate-400">{m.code}</p>
                   </div>
                   <div className="min-w-0 flex-1">
                     <a href={m.url} target="_blank" rel="noopener noreferrer"
                       className="group inline-flex items-start gap-1.5 text-[14px] font-bold text-slate-800 dark:text-slate-100
                         hover:text-[#004030] dark:hover:text-[#D8C3A5]">
-                      {m[lang]}<span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+                      {m[lang]}<span className="shrink-0 mt-1 text-slate-600 dark:text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
                     </a>
                     <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? m.d_zh : m.d_en}</p>
-                    <p className="mt-1.5 text-[11px] font-bold text-slate-400">{t.wk_maps_wk} {m.wk}</p>
+                    <p className="mt-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-400">{t.wk_maps_wk} {m.wk}</p>
                   </div>
                 </div>
               ))}
@@ -1668,34 +1668,34 @@ function App() {
                   className="w-full text-left px-4 sm:px-5 py-4 flex items-start gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                   <div className="shrink-0 w-14 sm:w-16">
                     <p className="font-serif font-black text-lg text-[#004030] dark:text-[#D8C3A5] leading-none">W{w.n}</p>
-                    <p className="mt-1 text-[11px] text-slate-400 tabular-nums">{fmtDate(d)}</p>
+                    <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 tabular-nums">{fmtDate(d)}</p>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-[14px] sm:text-[15px] text-slate-800 dark:text-slate-100 leading-snug">{w[lang].t}</p>
-                    <p className="mt-0.5 text-[12px] sm:text-[13px] text-slate-500 dark:text-slate-400 leading-snug">{w[lang].s}</p>
+                    <p className="mt-0.5 text-[12px] sm:text-[13px] text-slate-600 dark:text-slate-400 leading-snug">{w[lang].s}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-[10px] font-bold text-slate-500 dark:text-slate-300">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-[10px] font-bold text-slate-600 dark:text-slate-300">
                         {BLOCKS[w.block][lang]}
                       </span>
                       {w.ws && <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/50 text-[10px] font-bold text-emerald-800 dark:text-emerald-200">{t.wk_ws} {w.ws.c}</span>}
                       {w.mile && <span className="px-2 py-0.5 rounded-md bg-[#004030] dark:bg-[#D8C3A5] text-[10px] font-bold text-[#D8C3A5] dark:text-[#004030]">★ {t['ov_m_' + w.mile]}</span>}
                     </div>
                   </div>
-                  <span className={`shrink-0 mt-1 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}><IconChevronDown /></span>
+                  <span className={`shrink-0 mt-1 text-slate-600 dark:text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}><IconChevronDown /></span>
                 </button>
 
                 {open && (
                   <div className="px-4 sm:px-5 pb-5 pt-1 border-t border-slate-100 dark:border-slate-700 space-y-4">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{t.wk_focus}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">{t.wk_focus}</p>
                       <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{w[lang].f}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{t.wk_sdl}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">{t.wk_sdl}</p>
                       <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{w[lang].sdl}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">{t.wk_mats}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">{t.wk_mats}</p>
                       <div className="-mx-3">{w.mats.map((m, i) => <MatRow key={i} m={m} lang={lang} t={t} />)}</div>
                     </div>
                     {w.ws ? (
@@ -1704,7 +1704,7 @@ function App() {
                         {t.wk_open_ws} · {w.ws.c}<IconExternal />
                       </a>
                     ) : (
-                      <p className="text-[12px] text-slate-400 italic">{t.wk_none}</p>
+                      <p className="text-[12px] text-slate-600 dark:text-slate-400 italic">{t.wk_none}</p>
                     )}
                   </div>
                 )}
@@ -1739,7 +1739,7 @@ function App() {
               <div className="min-w-0">
                 <p className="font-bold text-[14px] text-slate-800 dark:text-slate-100">{x[lang]}</p>
                 <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? x.d_zh : x.d_en}</p>
-                {i === 0 && <p className="mt-1.5 text-[12px] font-mono text-slate-400">{SDL_FILE} · {t.sd_ask}</p>}
+                {i === 0 && <p className="mt-1.5 text-[12px] font-mono text-slate-600 dark:text-slate-400">{SDL_FILE} · {t.sd_ask}</p>}
               </div>
             </Card>
           ))}
@@ -1754,13 +1754,13 @@ function App() {
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
               <span className="font-serif font-bold text-[15px] text-slate-800 dark:text-slate-100">{r[lang]}</span>
             </div>
-            <p className="text-[13px] leading-relaxed text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">
+            <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-400 mb-3 max-w-3xl">
               {lang === 'zh' ? r.d_zh : r.d_en}
             </p>
             <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
               <table className="w-full min-w-[600px] text-[13px] border-collapse">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                  <tr className="text-left text-[11px] uppercase tracking-wider text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                     <th className="py-2 pr-3 font-bold whitespace-nowrap">{t.sd_plat_c1}</th>
                     <th className="py-2 px-3 font-bold">{t.sd_plat_c2}</th>
                     <th className="py-2 pl-3 font-bold whitespace-nowrap">{t.sd_plat_c3}</th>
@@ -1785,7 +1785,7 @@ function App() {
           </div>
         ))}
 
-        <p className="text-[12px] leading-relaxed text-slate-500 dark:text-slate-400 max-w-3xl
+        <p className="text-[12px] leading-relaxed text-slate-600 dark:text-slate-400 max-w-3xl
           border-l-2 border-slate-200 dark:border-slate-700 pl-3">{t.sd_plat_note}</p>
       </section>
 
@@ -1835,7 +1835,7 @@ function App() {
           <div className="space-y-2">
             {TP_SPEC.map((s, i) => (
               <Card key={i} className="p-4 flex gap-4">
-                <span className="shrink-0 font-serif font-black text-lg text-slate-300 dark:text-slate-600 tabular-nums w-6">{i + 1}</span>
+                <span className="shrink-0 font-serif font-black text-lg text-slate-600 dark:text-slate-400 tabular-nums w-6">{i + 1}</span>
                 <div className="min-w-0">
                   <p className="font-bold text-[14px] text-slate-800 dark:text-slate-100">{s[lang]}</p>
                   <p className="mt-1 text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? s.d_zh : s.d_en}</p>
@@ -1847,11 +1847,11 @@ function App() {
 
         <section>
           <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_roles}</h3>
-          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_roles_note}</p>
+          <p className="text-[13px] text-slate-600 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_roles_note}</p>
           <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
             <table className="w-full min-w-[560px] text-[13px] border-collapse">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                   <th className="py-2 pr-3 font-bold">{lang === 'zh' ? '角色' : 'Role'}</th>
                   <th className="py-2 px-3 font-bold whitespace-nowrap">{t.tp_role_code}</th>
                   <th className="py-2 px-3 font-bold">{t.tp_role_duty}</th>
@@ -1862,9 +1862,9 @@ function App() {
                 {TP_ROLES.map((r, i) => (
                   <tr key={i} className="border-b border-slate-100 dark:border-slate-800">
                     <td className="py-3 pr-3 font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap">{r[lang]}</td>
-                    <td className="py-3 px-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">{r.code}</td>
+                    <td className="py-3 px-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{r.code}</td>
                     <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{lang === 'zh' ? r.zh_d : r.en_d}</td>
-                    <td className="py-3 pl-3 font-mono text-[12px] text-slate-500 dark:text-slate-400 whitespace-nowrap">{r.lv}</td>
+                    <td className="py-3 pl-3 font-mono text-[12px] text-slate-600 dark:text-slate-400 whitespace-nowrap">{r.lv}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1874,7 +1874,7 @@ function App() {
 
         <section>
           <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_ladder}</h3>
-          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_ladder_note}</p>
+          <p className="text-[13px] text-slate-600 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_ladder_note}</p>
           <div className="grid gap-3 md:grid-cols-3">
             {LADDER.map(l => (
               <Card key={l.lv} className="p-5">
@@ -1884,8 +1884,8 @@ function App() {
                 </div>
                 <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{lang === 'zh' ? l.zh_d : l.en_d}</p>
                 <dl className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 space-y-1.5 text-[12px]">
-                  <div className="flex gap-2"><dt className="text-slate-400 shrink-0 w-16">{t.tp_lv_unit}</dt><dd className="text-slate-600 dark:text-slate-300 font-bold">{lang === 'zh' ? l.unit_zh : l.unit_en}</dd></div>
-                  <div className="flex gap-2"><dt className="text-slate-400 shrink-0 w-16">{t.tp_lv_verify}</dt><dd className="text-slate-600 dark:text-slate-300">{lang === 'zh' ? l.v_zh : l.v_en}</dd></div>
+                  <div className="flex gap-2"><dt className="text-slate-600 dark:text-slate-400 shrink-0 w-16">{t.tp_lv_unit}</dt><dd className="text-slate-600 dark:text-slate-300 font-bold">{lang === 'zh' ? l.unit_zh : l.unit_en}</dd></div>
+                  <div className="flex gap-2"><dt className="text-slate-600 dark:text-slate-400 shrink-0 w-16">{t.tp_lv_verify}</dt><dd className="text-slate-600 dark:text-slate-300">{lang === 'zh' ? l.v_zh : l.v_en}</dd></div>
                 </dl>
               </Card>
             ))}
@@ -1894,7 +1894,7 @@ function App() {
 
         <section>
           <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_arch}</h3>
-          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_arch_note}</p>
+          <p className="text-[13px] text-slate-600 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_arch_note}</p>
           <Card className="p-5">
             <ol className="space-y-0">
               {[t.tp_arch_1, t.tp_arch_2, t.tp_arch_3].map((s, i) => (
@@ -1905,7 +1905,7 @@ function App() {
               ))}
               <li className="flex gap-3 pb-3 ml-9 pl-3 border-l-2 border-rose-300 dark:border-rose-700">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-rose-500 dark:text-rose-400 mb-1">✗ {t.tp_arch_fail}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-1">✗ {t.tp_arch_fail}</p>
                   <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">{t.tp_arch_4}</p>
                 </div>
               </li>
@@ -1919,11 +1919,11 @@ function App() {
 
         <section>
           <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.tp_dday}</h3>
-          <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_dday_note}</p>
+          <p className="text-[13px] text-slate-600 dark:text-slate-400 mb-3 max-w-3xl">{t.tp_dday_note}</p>
           <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
             <table className="w-full min-w-[480px] text-[13px] border-collapse">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                   <th className="py-2 pr-3 font-bold">{t.tp_d_col1}</th>
                   <th className="py-2 px-3 font-bold whitespace-nowrap">{t.tp_d_col2}</th>
                   <th className="py-2 pl-3 font-bold">{t.tp_d_col3}</th>
@@ -1933,7 +1933,7 @@ function App() {
                 {days.map((r, i) => (
                   <tr key={i} className={`border-b border-slate-100 dark:border-slate-800 ${r.label === 'D+3' ? 'bg-[#004030]/5 dark:bg-[#D8C3A5]/10' : ''}`}>
                     <td className="py-3 pr-3 font-mono font-bold text-[#004030] dark:text-[#D8C3A5] whitespace-nowrap">{r.label}</td>
-                    <td className="py-3 px-3 text-slate-500 dark:text-slate-400 tabular-nums whitespace-nowrap">{r.date}</td>
+                    <td className="py-3 px-3 text-slate-600 dark:text-slate-400 tabular-nums whitespace-nowrap">{r.date}</td>
                     <td className="py-3 pl-3 text-slate-600 dark:text-slate-300">{r.why}</td>
                   </tr>
                 ))}
@@ -2014,7 +2014,7 @@ function App() {
         <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
           <table className="w-full min-w-[520px] text-[13px] border-collapse">
             <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-200 dark:border-slate-700">
+              <tr className="text-left text-[11px] uppercase tracking-wider text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                 <th className="py-2 pr-3 font-bold whitespace-nowrap">{t.as_w16_c1}</th>
                 <th className="py-2 pl-3 font-bold">{t.as_w16_c2}</th>
               </tr>
@@ -2032,7 +2032,7 @@ function App() {
       </section>
 
       <Card className="p-5 border-l-4 border-l-[#004030] dark:border-l-[#D8C3A5]">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{t.as_note}</p>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">{t.as_note}</p>
         <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300">{t.as_note_p}</p>
       </Card>
     </div>
@@ -2049,7 +2049,7 @@ function App() {
       <ol className="space-y-2">
         {ETHICS.map((e, i) => (
           <Card key={i} className="p-4 flex gap-4">
-            <span className="shrink-0 font-serif font-black text-lg text-slate-300 dark:text-slate-600 tabular-nums w-6">{i + 1}</span>
+            <span className="shrink-0 font-serif font-black text-lg text-slate-600 dark:text-slate-400 tabular-nums w-6">{i + 1}</span>
             <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-200">{e[lang]}</p>
           </Card>
         ))}
@@ -2085,10 +2085,10 @@ function App() {
                 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-mono text-[12px] font-bold text-[#004030] dark:text-[#D8C3A5]">{x.code}</p>
-                <span className="text-[11px] font-bold text-slate-400">{x.wk}</span>
+                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">{x.wk}</span>
               </div>
               <p className="mt-1.5 flex items-start gap-1.5 text-[13px] font-bold text-slate-800 dark:text-slate-100 leading-snug">
-                {x[lang]}<span className="shrink-0 mt-1 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+                {x[lang]}<span className="shrink-0 mt-1 text-slate-600 dark:text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
               </p>
             </a>
           ))}
@@ -2097,7 +2097,7 @@ function App() {
 
       <section>
         <h3 className="font-serif font-bold text-lg text-[#004030] dark:text-[#D8C3A5] mb-1">{t.rs_ws}</h3>
-        <p className="text-[13px] text-slate-500 dark:text-slate-400 mb-3">{t.rs_ws_note}</p>
+        <p className="text-[13px] text-slate-600 dark:text-slate-400 mb-3">{t.rs_ws_note}</p>
         <div className="flex flex-wrap gap-2">
           <a href={WS_BASE} target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#004030] text-[#D8C3A5] dark:bg-[#D8C3A5] dark:text-[#004030] text-[12px] font-bold hover:opacity-90">
@@ -2128,7 +2128,7 @@ function App() {
                 bg-white dark:bg-slate-800/60 hover:border-[#004030] dark:hover:border-[#D8C3A5] transition-colors">
               <span className="flex-1 min-w-0 text-[13px] font-bold text-slate-700 dark:text-slate-200
                 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]">{x.a}</span>
-              <span className="shrink-0 text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
+              <span className="shrink-0 text-slate-600 dark:text-slate-400 group-hover:text-[#004030] dark:group-hover:text-[#D8C3A5]"><IconExternal /></span>
             </a>
           ))}
         </div>
@@ -2196,7 +2196,7 @@ function App() {
       <div className="flex-1 w-full max-w-7xl mx-auto flex">
         <aside className="hidden md:block w-56 shrink-0 border-r border-slate-200 dark:border-slate-700 py-8 px-3">
           <div className="sticky top-24 space-y-1">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 mb-2">{t.nav_modules}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-3 mb-2">{t.nav_modules}</p>
             {SECTIONS.map(s => (
               <button key={s.id} onClick={() => goSection(s.id)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-all
@@ -2213,11 +2213,11 @@ function App() {
 
       {/* FOOTER */}
       <footer className="h-8 bg-[#004030] flex items-center justify-between gap-2 px-3 sm:px-4 shrink-0">
-        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs truncate min-w-0">
+        <span className="text-[#D8C3A5]/85 text-[10px] sm:text-xs truncate min-w-0">
           <span className="hidden sm:inline">{t.date} · {t.copyright}</span>
           <span className="sm:hidden">{t.date}</span>
         </span>
-        <span className="text-[#D8C3A5]/60 text-[10px] sm:text-xs flex items-center gap-2 sm:gap-3 shrink-0">
+        <span className="text-[#D8C3A5]/85 text-[10px] sm:text-xs flex items-center gap-2 sm:gap-3 shrink-0">
           <span className="whitespace-nowrap">
             <span className="hidden sm:inline">{t.architect_label}&nbsp;</span>
             <a href={t.architect_url} target="_blank" rel="noopener noreferrer" className="text-[#D8C3A5] hover:text-white underline">Prof. Shihmin Lo</a>
