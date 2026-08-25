@@ -188,6 +188,12 @@ const IconInstall = ({size=18}) => (<svg width={size} height={size} viewBox="0 0
 const IconFile =({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>);
 const IconVideo = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>);
 const IconBook = ({size=16}) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>);
+/* 行動裝置判定：用指標能力，不猜 user-agent。語音導覽的保活策略在手機上要相反。 */
+const IS_TOUCH = (() => {
+  try { return window.matchMedia('(hover: none) and (pointer: coarse)').matches; }
+  catch (e) { return false; }
+})();
+
 
 /* ==================== 課程常數 ==================== */
 const W1_DATE   = '2026-09-09';          /* W1 上課日（週三） */
@@ -220,21 +226,24 @@ const BLOCKS = {
 const WEEKS = [
 { n:1, block:'intro', zh:{t:'課程導論', s:'看見終點：這學期你會做出什麼',
   f:'現場打開 LoLo’s Daily Brief，說明「這學期結束時，每一組都會有一個這樣的網址，而且是關於你想去的產業在找什麼樣的人」。',
-  sdl:'課前完成 Worksheet-W1 Part A（手寫，不使用 AI）'},
+  sdl:'當天 23:59 前交兩份：手寫三題（不使用 AI）＋ 一分鐘英文自我介紹真實版'},
   en:{t:'Orientation', s:'See the finish line: what you will have built',
   f:'Open LoLo’s Daily Brief live. By the end of term every group will own a URL like this — about the industry they want to enter.',
-  sdl:'Complete Worksheet-W1 Part A before class (handwritten, no AI)'},
+  sdl:'Two items by 23:59 the same day: three handwritten questions (no AI) and a one-minute authentic self-introduction'},
   mats:[
-   {k:'main', zh:'LoLo’s Daily Brief — TP 的標竿示範', en:'LoLo’s Daily Brief — the benchmark for your Term Project', url:'https://lolopodcast.github.io/daily-brief/'},
-   {k:'yt', zh:'EP28a · See the World, Understand Industry, Shape Yourself（5 分鐘，中文字幕）', en:'EP28a · See the World, Understand Industry, Shape Yourself (5 min, Chinese subtitles)', url:'https://youtu.be/RVeT7DyKTYE'}
+   {k:'main', zh:'W1 課程導論（公開頁）—— 三個層級、三個轉變、第一天要交什麼', en:'W1 Orientation (public) — the three levels, the three shifts, and what is due on day one', url:'https://lolopodcast.github.io/PMCS-1151-W1/'},
+   {k:'read', zh:'LoLo’s Daily Brief — TP 的標竿示範', en:'LoLo’s Daily Brief — the benchmark for your Term Project', url:'https://lolopodcast.github.io/daily-brief/'},
+   {k:'read', zh:'EMI-AI 自我介紹練習 —— 4Q 提詞、錄影錄音工具、CEFR 自評', en:'EMI-AI Self-Introduction Practice — 4Q prompts, recorder, CEFR self-check', url:'https://lolopodcast.github.io/EMI-AI-Self-Introduction/'},
+   {k:'yt', zh:'導論影片 ① · See the World, Understand Industry, Shape Yourself（中英解說）', en:'Orientation video 1 · See the World, Understand Industry, Shape Yourself (bilingual)', url:'https://youtu.be/RVeT7DyKTYE'},
+   {k:'yt', zh:'導論影片 ②（中英解說）', en:'Orientation video 2 (bilingual)', url:'https://youtu.be/ZpZ8ql7e3as'}
   ], ws:null },
 
 { n:2, block:'intro', zh:{t:'分組與訂閱方案決策', s:'每組需要一個技術點火者',
   f:'分組規則：每組至少一名對工具操作有興趣或經驗者。收技術與工具經驗自評三題用於分組平衡。本課程要求具備 AI 付費方案，組員間可互相支援。',
-  sdl:'課中完成 Worksheet-W1 Part B'},
+  sdl:'課後：與 SDL 學習夥伴協作講稿，重錄一次自我介紹（班內公開、不計分）；並完成 Part B'},
   en:{t:'Team Building', s:'Every team needs one technical igniter',
   f:'Grouping rule: each team needs at least one member comfortable with tooling. A three-item self-assessment balances the teams. A paid AI plan is required; teammates may share.',
-  sdl:'Complete Worksheet-W1 Part B during class'},
+  sdl:'After class: work with the SDL partner on a script and re-record the introduction (shared within the class, not graded); then complete Part B'},
   mats:[
    {k:'main', zh:'AI Ecosystem Comparison — Claude vs ChatGPT vs Gemini', en:'AI Ecosystem Comparison — Claude vs ChatGPT vs Gemini', url:'https://lolopodcast.github.io/AI-Ecosystem-Comparison/'},
    {k:'read', zh:'EMI-AI 自我介紹練習（支援 1 分鐘自介影片）', en:'EMI-AI Personal Introduction Practice', url:'https://lolopodcast.github.io/EMI-AI-Self-Introduction/'}
@@ -295,7 +304,7 @@ const WEEKS = [
    {k:'yt', zh:'EP26 · Learning for Competence Building', en:'EP26 · Learning for Competence Building', url:'https://youtu.be/XQk_c0w80FQ'}
   ], ws:{c:'W06'} },
 
-{ n:7, block:'role', zh:{t:'職能地圖：Competency = f(K, S, A)', s:'把一份 JD 拆成知識、技能與態度',
+{ n:7, block:'role', zh:{t:'職能地圖：Competency 職能（素養）= f(K 知識, S 技能, A 態度)', s:'把一份 JD 拆成知識、技能與態度',
   f:'104 的欄位結構就是半套抽取規則；兩軸判定（管理對象 PM／PjM、層級 Specialist→Director 以上）一律不採信職稱、必附原句依據；A（態度）的四象限與不可觀察性批判。',
   sdl:'實際抓 5 份 JD，用兩軸判定跑一遍，記錄「無法判定」的比例'},
   en:{t:'The Competency Map: Competency = f(K, S, A)', s:'Take a job description apart into knowledge, skills and attitude',
@@ -532,6 +541,8 @@ const MAPS = [
 
 /* ==================== 六份教學型 SPA ==================== */
 const TEACH = [
+  { code:'W1 · ORNT', wk:'W1', url:'https://lolopodcast.github.io/PMCS-1151-W1/',
+    zh:'課程導論（公開頁）：三個層級與第一天要交的東西', en:'Orientation (public): the three levels and what is due on day one' },
   { code:'T1 · AIWE', wk:'W3 · W10', url:'https://lolopodcast.github.io/AI-Work-Environment-Layers/',
     zh:'AI 工作環境的層級模型', en:'The Layers of an AI Work Environment' },
   { code:'T2 · AGEN', wk:'W4 · W11', url:'https://lolopodcast.github.io/Agent-Engineering-System-Map/',
@@ -665,7 +676,7 @@ en: {
   ov_map: 'The shape of the course',
   ov_quick: 'Go straight to',
   ov_quick_ws: 'Worksheets', ov_quick_ws_d: 'All twelve, W3 to W15',
-  ov_quick_teach: 'Teaching materials', ov_quick_teach_d: 'The six interactive units',
+  ov_quick_teach: 'Teaching materials', ov_quick_teach_d: 'Seven interactive units',
   ov_quick_bench: 'The benchmark', ov_quick_bench_d: 'LoLo’s Daily Brief',
   ov_quick_hub: 'AI Workshop Hub', ov_quick_hub_d: 'The full material library',
   ov_what: 'What you will have built',
@@ -753,7 +764,7 @@ en: {
 
   /* Resources */
   rs_title: 'Everything in one place',
-  rs_teach: 'Teaching materials — six interactive units',
+  rs_teach: 'Teaching materials — seven interactive units',
   rs_ws: 'Worksheets — twelve',
   rs_ws_note: 'The worksheet index is behind the same passphrase. Direct week links open without it.',
   rs_hub: 'Library and reference',
@@ -810,7 +821,7 @@ zh: {
   ov_map: '課程的形狀',
   ov_quick: '直接前往',
   ov_quick_ws: '學習單', ov_quick_ws_d: '十二份，W3 到 W15',
-  ov_quick_teach: '教學型教材', ov_quick_teach_d: '六份互動單元',
+  ov_quick_teach: '教學型教材', ov_quick_teach_d: '七份互動單元',
   ov_quick_bench: '標竿示範', ov_quick_bench_d: 'LoLo’s Daily Brief',
   ov_quick_hub: 'AI Workshop Hub', ov_quick_hub_d: '完整教材庫',
   ov_what: '這學期結束時，你會做出什麼',
@@ -893,7 +904,7 @@ zh: {
   et_g4: 'Persistence', et_g4d: 'Memory／KB 寫入前需審核；秘密金鑰只放後端安全環境',
 
   rs_title: '全部資源一次看完',
-  rs_teach: '教學型教材 —— 六份互動單元',
+  rs_teach: '教學型教材 —— 七份互動單元',
   rs_ws: '學習單 —— 十二份',
   rs_ws_note: '學習單索引頁使用同一組通行碼；逐週的直接連結不需要通行碼。',
   rs_hub: '教材庫與參考',
@@ -1072,6 +1083,15 @@ function App() {
     ttsUtter.current = null;
   };
   useEffect(() => () => ttsClearTimers(), []);
+  /* 手機切走再切回來時，有些瀏覽器會把語音留在暫停狀態，回前景時推一把 */
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState !== 'visible') return;
+      try { if (speechSynthesis.paused && speechSynthesis.speaking) speechSynthesis.resume(); } catch (e) {}
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
   const t = TXT[lang];
 
@@ -1323,7 +1343,7 @@ function App() {
       ttsRun.current += 1;
       const myRun = ttsRun.current;
       let qi = 0;
-      let idleTicks = 0, everStarted = false;
+      let idleTicks = 0, everStarted = false, revives = 0;
       const finish = () => { ttsClearTimers(); ttsUtter.current = null; setTtsState('idle'); setTtsWeek(null); };
       const speakNext = () => {
         if (myRun !== ttsRun.current) return;
@@ -1343,13 +1363,17 @@ function App() {
       };
       setTtsState('playing');
 
-      /* Chrome 約 15 秒後會靜默停住且不觸發 onend，週期性 pause/resume 可維持運作 */
+      /* Chrome 約 15 秒後會靜默停住且不觸發 onend，週期性 pause/resume 可維持運作。
+         但這一招只對桌機成立——手機（iOS Safari 尤其）由計時器發出的 pause() 不是使用者手勢，
+         resume() 不保證生效，反而造成「唸幾秒就停住」。所以行動裝置一律不裝保活。 */
       ttsClearTimers();
-      ttsKeep.current = setInterval(() => {
-        if (myRun !== ttsRun.current) return;
-        if (!speechSynthesis.speaking || speechSynthesis.paused) return;   /* 使用者按了暫停就別動它 */
-        try { speechSynthesis.pause(); speechSynthesis.resume(); } catch (e) {}
-      }, 8000);
+      if (!IS_TOUCH) {
+        ttsKeep.current = setInterval(() => {
+          if (myRun !== ttsRun.current) return;
+          if (!speechSynthesis.speaking || speechSynthesis.paused) return;   /* 使用者按了暫停就別動它 */
+          try { speechSynthesis.pause(); speechSynthesis.resume(); } catch (e) {}
+        }, 8000);
+      }
 
       /* 看門狗：連續三次（約 2.4 秒）引擎既沒在講也沒在等，就視為已結束或卡住，把按鈕還原。
          門檻拉到 2.4 秒是為了容忍網路語音的起始延遲；utterance 一旦真的開始講就會歸零。 */
@@ -1359,7 +1383,13 @@ function App() {
         idleTicks += 1;
         /* 只有在確定引擎會回報 onstart 時才用 2.4 秒的快速判定；
            若這個瀏覽器從沒回報過 onstart，就退回 24 秒的保守停滯判定，免得誤砍正常朗讀。 */
-        if (idleTicks >= (everStarted ? 3 : 30)) { ttsRun.current += 1; finish(); }
+        /* 手機在兩段之間的空檔比桌機長很多，門檻放寬；而且還有段落沒唸完時
+           要重新推一次，而不是直接收工——舊版一律 finish 是手機唸幾秒就停的第二個原因。 */
+        const limit = everStarted ? (IS_TOUCH ? 8 : 3) : (IS_TOUCH ? 40 : 30);
+        if (idleTicks < limit) return;
+        idleTicks = 0;
+        if (qi < queue.length && revives < 8) { revives += 1; speakNext(); return; }
+        ttsRun.current += 1; finish();
       }, 800);
 
       setTimeout(speakNext, 60);
