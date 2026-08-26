@@ -200,7 +200,18 @@ const W1_DATE   = '2026-09-09';          /* W1 上課日（週三） */
 const DDAY_WEEK = 15;                     /* D day＝W15 上課日 */
 const WS_BASE   = 'https://lolopodcast.github.io/PMCS-1151/';
 const HUB       = 'https://lolopodcast.github.io/AI-Workshop-Hub/';
-const PASS      = 'proflolothebest';
+const PASS      = 'proflolothebest';   /* 教師與 TA 用；學生走學號格式 */
+
+/* 學號格式：s／S 可省略 + 9 位數字，例如 s112212015。
+   刻意「只比對格式，不比對名單」——名單一旦寫進前端就等於把全班學號公開在
+   一個會被搜尋引擎索引的 repo 裡，那是永久性的個資外洩，換不回來。
+   代價是任何 9 位數字都進得來；這道門本來就是門簾不是門鎖，真正的價值在於
+   每個人用自己的識別碼，班上不必共用一組會被截圖轉傳的通行碼。 */
+const ID_RE = /^s?\d{9}$/;
+
+/* 輸入正規化：去掉空白與連字號、轉小寫。學生會打成 s-112-2-12-0-15 或帶空格，
+   為了格式沒對齊就把人擋在外面，是沒有必要的摩擦。 */
+const normId = (v) => String(v || '').trim().toLowerCase().replace(/[\s-]/g, '');
 
 const weekDate = (n) => {
   const d = new Date(W1_DATE + 'T00:00:00');
@@ -640,10 +651,8 @@ en: {
 
   /* Gate */
   gate_title: 'System Login', gate_sub: 'PMCS Course Hub',
-  gate_note: 'This page is for students enrolled in PMCS (EMI), semester 1151. Enter the course passphrase to continue.',
-  gate_ph: 'Course passphrase', gate_go: 'Enter', gate_err: 'That passphrase is not correct. Please try again.',
-  gate_remember: 'Once you have entered it on this browser, you will not be asked again.',
-  gate_show: 'Show passphrase', gate_hide: 'Hide passphrase',
+  gate_ph: 'Student number', gate_go: 'Enter', gate_err: 'That did not work. Try again.',
+  gate_show: 'Show what I typed', gate_hide: 'Hide what I typed',
 
   /* Sections */
   s0: 'Overview', s1: 'Weekly Materials', s2: 'Term Project', s3: 'Assessment', s4: 'Ethics', s5: 'All Resources',
@@ -788,10 +797,8 @@ zh: {
   architect_label: 'Architect:', architect_url: 'https://www.ibs.ncnu.edu.tw/index.php/faculty/tenured-professor/299-smlo',
 
   gate_title: '系統登入', gate_sub: 'PMCS 課程總入口',
-  gate_note: '本頁供 1151 學期 PMCS（全英授課）修課同學使用。請輸入課程通行碼。',
-  gate_ph: '課程通行碼', gate_go: '進入', gate_err: '通行碼不正確，請再試一次。',
-  gate_remember: '在這台瀏覽器輸入過一次之後，下次可直接進入。',
-  gate_show: '顯示通行碼', gate_hide: '隱藏通行碼',
+  gate_ph: '學號', gate_go: '進入', gate_err: '無法進入，請再試一次。',
+  gate_show: '顯示輸入內容', gate_hide: '隱藏輸入內容',
 
   s0: '總覽', s1: '每週教材', s2: '期末專案', s3: '評量與繳交', s4: '倫理聲明', s5: '資源總表',
   s6: 'SDL 學習夥伴',
@@ -921,9 +928,11 @@ zh: {
 /* ==================== 通行碼門簾（curtain, not security） ==================== */
 const GATE_KEY = 'pmcs_hub_gate';
 
-function Gate({ onPass, lang, setLang, isDark }) {
+function Gate({ onPass, lang, setLang, isDark, setDark }) {
   const t = TXT[lang];
   const [val, setVal] = useState('');
+  /* 預設遮蔽。教師會在 W2 課堂投影示範，通行碼不該直接出現在大螢幕上；
+     學生要核對自己打的學號，按眼睛圖示即可。 */
   const [show, setShow] = useState(false);
   const [err, setErr] = useState(false);
   const inputRef = useRef(null);
@@ -932,8 +941,11 @@ function Gate({ onPass, lang, setLang, isDark }) {
 
   const submit = (e) => {
     if (e) e.preventDefault();
-    const v = (val || '').trim().toLowerCase();
-    if (v === PASS) {
+    const v = normId(val);
+    /* 兩條路都放行：教師／TA 的課程通行碼，或任何符合學號格式的字串。
+       注意這裡「只」寫入一個布林旗標——學號本身絕不落地。存起來就等於在學生的
+       裝置上留下一個識別碼，也會讓後續的程式很容易順手拿去用。 */
+    if (v === PASS || ID_RE.test(v)) {
       try { localStorage.setItem(GATE_KEY, '1'); } catch (x) {}
       onPass();
     } else { setErr(true); }
@@ -944,7 +956,13 @@ function Gate({ onPass, lang, setLang, isDark }) {
       <div className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md animate-fade-in">
 
-          <div className="flex justify-end mb-4">
+          {/* 語言鈕放這裡的理由是「被擋在外面的人看不到頁首那顆」；
+              這個理由對主題鈕一字不差地成立，先前只做了一半。 */}
+          <div className="flex justify-end gap-2 mb-4">
+            <button onClick={() => setDark(!isDark)} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="px-3 py-1.5 text-xs font-bold border border-[#D8C3A5]/50 rounded-lg hover:bg-white/10 flex items-center">
+              {isDark ? <IconSun size={14} /> : <IconMoon size={14} />}
+            </button>
             <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
               className="px-3 py-1.5 text-xs font-bold border border-[#D8C3A5]/50 rounded-lg hover:bg-white/10 flex items-center gap-1.5">
               <IconGlobe size={14} />{lang === 'en' ? '中文' : 'EN'}
@@ -956,14 +974,13 @@ function Gate({ onPass, lang, setLang, isDark }) {
               <span className="text-[#D8C3A5]"><IconLock size={22} /></span>
               <h1 className="font-serif font-black text-2xl tracking-wide text-[#D8C3A5]">{t.gate_title}</h1>
             </div>
-            <p className="font-serif text-sm text-white/70 mb-1">{t.gate_sub}</p>
-            <p className="text-[13px] leading-relaxed text-white/60 mb-6">{t.gate_note}</p>
+            <p className="font-serif text-sm text-white/70 mb-6">{t.gate_sub}</p>
 
             <form onSubmit={submit}>
               <div className="relative">
                 <input ref={inputRef} type={show ? 'text' : 'password'} value={val}
                   onChange={(e) => { setVal(e.target.value); setErr(false); }}
-                  placeholder={t.gate_ph} autoComplete="off" spellCheck="false"
+                  placeholder="" autoComplete="off" spellCheck="false"
                   aria-label={t.gate_ph}
                   className="w-full bg-white/10 border border-[#D8C3A5]/40 rounded-xl pl-4 pr-12 py-3 text-white placeholder-white/40
                     focus:outline-none focus:border-[#D8C3A5] focus:ring-2 focus:ring-[#D8C3A5]/30" />
@@ -982,10 +999,9 @@ function Gate({ onPass, lang, setLang, isDark }) {
               </button>
             </form>
 
-            <p className="mt-5 text-[12px] leading-relaxed text-white/45">{t.gate_remember}</p>
           </div>
 
-          <p className="mt-6 text-center text-[11px] text-white/35">
+          <p className="mt-6 text-center text-[11px] text-white/70">
             {t.architect_label}&nbsp;
             <a href={t.architect_url} target="_blank" rel="noopener noreferrer"
               className="text-[#D8C3A5]/80 hover:text-[#D8C3A5] underline">Prof. Shihmin Lo</a>
@@ -1399,7 +1415,7 @@ function App() {
   };
 
   if (!unlocked) {
-    return <Gate onPass={() => setUnlocked(true)} lang={lang} setLang={setLang} isDark={isDark} />;
+    return <Gate onPass={() => setUnlocked(true)} lang={lang} setLang={setLang} isDark={isDark} setDark={setIsDark} />;
   }
 
   /* ==================== 0 · 總覽 ==================== */
